@@ -21,7 +21,7 @@ export const Home = () => {
           <div className="text-white text-2xl">X-Pay</div>
 
           <Link
-            to="/login"
+            to="login"
             target="_blank"
             className=" bg-white p-2 rounded-full text-gray-400"
           >
@@ -72,7 +72,7 @@ export const Home = () => {
               Get started today and experience seamless payments.
             </p>
             <Link
-              to="/register"
+              to="register"
               target="_blank"
               className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 w-fit font-bold"
             >
