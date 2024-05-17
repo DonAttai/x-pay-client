@@ -38,8 +38,8 @@ import { NotFound } from "@/pages/not-found.tsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="login" element={<Login />} />
+      <Route path="register" element={<Register />} />
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
         <Route path="*" element={<NotFound />} />
