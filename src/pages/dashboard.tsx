@@ -11,7 +11,7 @@ export const Dashboard = () => {
   const { isPending } = useUser();
 
   useEffect(() => {
-    if (userCredentials === null) navigate("/login");
+    if (!userCredentials) navigate("/login");
   }, [userCredentials]);
 
   if (isPending) {

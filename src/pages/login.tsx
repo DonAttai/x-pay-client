@@ -32,7 +32,7 @@ export const Login = () => {
     return res.data;
   };
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutate: loginUser } = useMutation({
     mutationFn: loginMutation,
     onSuccess: (data) => {
       setCredentials(data);
@@ -63,7 +63,7 @@ export const Login = () => {
     };
 
     if (email.trim() && password.trim()) {
-      mutate({ email, password }, { onSuccess: () => e.currentTarget.reset() });
+      loginUser({ email, password });
     } else {
       toast.error("email and password are required!");
     }
