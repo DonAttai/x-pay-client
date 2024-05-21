@@ -14,13 +14,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { capitalizeFirstLetter } from "@/lib/utils";
 
 export const Header = () => {
   const [greeting, setGreeting] = useState("");
 
   const { logOut } = useAuthActions();
   const { data: user } = useUser();
+  console.log(user);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ export const Header = () => {
         <div className="w-full h-full flex gap-2 justify-between pl-6 pr-32 items-center relative">
           {location.pathname === "/dashboard" ? (
             <p className="text-lg font-semibold">
-              {`${greeting}, ${user?.firstName.toUpperCase()}`}
+              {`${greeting}, ${user?.firstName?.toUpperCase()}`}
             </p>
           ) : (
             navSection.map((section) => {
@@ -77,15 +77,16 @@ export const Header = () => {
                 className="p-2 text-base rounded-full text-blue-400"
                 style={{ wordSpacing: "-4px" }}
               >
-                {`${user?.firstName[0].toUpperCase()}   ${user?.lastName[0].toUpperCase()}`}
+                {user &&
+                  `${user?.firstName[0].toUpperCase()}   ${user?.lastName[0].toUpperCase()}`}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
               <DropdownMenuLabel>
                 <UserCheck size={16} className=" inline-block mr-2" />
-                {`${capitalizeFirstLetter(
+                {/* {`${capitalizeFirstLetter(
                   user?.firstName!
-                )} ${capitalizeFirstLetter(user?.lastName!)}`}
+                )} ${capitalizeFirstLetter(user?.lastName!)}`} */}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>

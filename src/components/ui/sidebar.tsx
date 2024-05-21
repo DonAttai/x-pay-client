@@ -95,7 +95,7 @@ export const Sidebar = () => {
         ) : (
           <CreateWallet />
         )}
-        {user?.roles.includes("admin") ? (
+        {user?.roles?.includes("admin") ? (
           <NavLink
             to="users"
             className="text-sm mt-3"

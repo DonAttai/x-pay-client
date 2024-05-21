@@ -20,8 +20,16 @@ export const DashboardHome = () => {
     <div>
       <div className="bg-stone-50 rounded-md p-10 mb-4">
         <div className="flex justify-between mb-8">
-          <p>Wallet ID: {isSuccess && user.wallet?.id}</p>
-          <p>Balance: {isSuccess && formatted(+user?.wallet?.balance)}</p>
+          {user?.wallet ? (
+            <>
+              <p>Wallet ID: {isSuccess && user.wallet.id}</p>
+              <p>Balance: {isSuccess && formatted(+user.wallet.balance)}</p>
+            </>
+          ) : (
+            <div>
+              Create and Fund your wallet to start making transactions!wa
+            </div>
+          )}
         </div>
       </div>
       {transactions?.length ? (

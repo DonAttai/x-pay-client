@@ -27,8 +27,12 @@ export const Wallet = () => {
             Transfer Money
             <MoveUpRight size={16} className="ml-2" />
           </Button>
-          {/* <Button variant={"outline"}>Deposite Money</Button> */}
-          {/* <Button variant={"outline"}>Withdraw Money</Button> */}
+          {user?.roles.includes("admin") ? (
+            <>
+              <Button variant={"outline"}>Deposite Money</Button>
+              <Button variant={"outline"}>Withdraw Money</Button>
+            </>
+          ) : null}
         </div>
       </div>
       <div className="bg-stone-50 rounded-md p-10">
