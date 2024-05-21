@@ -1,6 +1,6 @@
 import axiosInstance from "@/hooks/axios";
 import { useUser } from "@/hooks/use-user";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { FormEvent, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -15,6 +15,8 @@ const fundWalletSchema = z.object({
 });
 
 export const FundWallet = () => {
+  const queryClient = useQueryClient();
+
   const {
     data: paystackData,
     mutate,
@@ -25,6 +27,9 @@ export const FundWallet = () => {
     mutationFn: async (userData: { amount: number; email: string }) => {
       const res = await axiosInstance.post("/paystack/initialize", userData);
       return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
   const { data: user } = useUser();
