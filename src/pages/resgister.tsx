@@ -7,6 +7,7 @@ import axiosInstance from "../hooks/axios";
 
 import { AxiosError } from "axios";
 import { useAuth } from "@/store/auth-store";
+import { Loader } from "lucide-react";
 export const Register = () => {
   const userCredentials = useAuth();
 
@@ -132,11 +133,17 @@ export const Register = () => {
           </div>
 
           <button
-            className="bg-blue-400 mb-4 w-full py-2 rounded-full text-white font-bold disabled:opacity-80"
+            className={`bg-blue-400 mb-4 w-full py-2 rounded-full text-white font-bold disabled:opacity-80 ${
+              isPending ? "cursor-not-allowed" : ""
+            }`}
             type="submit"
             disabled={isPending}
           >
-            {isPending ? "wait" : "Create account"}
+            {isPending ? (
+              <Loader className="animate-spin inline-block" />
+            ) : (
+              "Create account"
+            )}
           </button>
           <p className="text-sm">
             Already have an account?

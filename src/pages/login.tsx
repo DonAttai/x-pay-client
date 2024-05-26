@@ -112,7 +112,9 @@ export const Login = () => {
             <Link to="">Forgot password</Link>
           </div>
           <button
-            className="bg-blue-400 mb-4 w-full py-2 rounded-full text-white font-bold disabled:opacity-80"
+            className={`bg-blue-400 mb-4 w-full py-2 rounded-full text-white font-bold disabled:opacity-80 ${
+              isPending ? "cursor-not-allowed" : ""
+            }`}
             type="submit"
             disabled={isPending}
           >

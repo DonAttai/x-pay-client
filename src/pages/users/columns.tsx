@@ -4,7 +4,7 @@ import { UserType } from "@/hooks/use-user";
 import { getFullName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
-import { UserDetails } from "@/components/ui/user-details";
+import { UserDialog } from "@/components/ui/user-dialog";
 export const columns: ColumnDef<UserType>[] = [
   {
     header: "NAME",
@@ -39,11 +39,11 @@ export const columns: ColumnDef<UserType>[] = [
     cell: ({ row }) => {
       const user = row.original;
       return (
-        <UserDetails user={user}>
+        <UserDialog user={user}>
           <Button variant={"outline"} size={"icon"}>
             <Edit size={16} />
           </Button>
-        </UserDetails>
+        </UserDialog>
       );
     },
   },

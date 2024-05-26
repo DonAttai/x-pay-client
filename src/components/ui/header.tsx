@@ -1,29 +1,9 @@
 import { useUser } from "@/hooks/use-user";
-import { useAuthActions } from "@/store/auth-store";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Settings, UserCheck, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-export const Header = () => {
+export const Header = (props: { children: React.ReactNode }) => {
   const [greeting, setGreeting] = useState("");
-
-  const { logOut } = useAuthActions();
   const { data: user } = useUser();
-  console.log(user);
-
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const navSection = [
     { title: "Transactions", path: "/dashboard/transactions" },
@@ -31,12 +11,8 @@ export const Header = () => {
     { title: "Users", path: "/dashboard/users" },
     { title: "Fund Wallet", path: "/dashboard/wallet/fund-wallet" },
     { title: "Transfer Money", path: "/dashboard/wallet/transfer-money" },
+    { title: "Settings", path: "/dashboard/settings" },
   ];
-
-  const signOut = () => {
-    logOut();
-    navigate("/login");
-  };
 
   const greet = () => {
     let today = new Date(),
@@ -70,37 +46,7 @@ export const Header = () => {
               ) : null;
             })
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant={"outline"}
-                className="p-2 text-base rounded-full text-blue-400"
-                style={{ wordSpacing: "-4px" }}
-              >
-                {user &&
-                  `${user?.firstName[0].toUpperCase()}   ${user?.lastName[0].toUpperCase()}`}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>
-                <UserCheck size={16} className=" inline-block mr-2" />
-                {/* {`${capitalizeFirstLetter(
-                  user?.firstName!
-                )} ${capitalizeFirstLetter(user?.lastName!)}`} */}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <Settings size={16} className="mr-2" />
-                  Profile Setting
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuItem className="text-red-600" onClick={signOut}>
-                <LogOut size={16} className="mr-2" />
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {props.children}
         </div>
       </nav>
     </header>

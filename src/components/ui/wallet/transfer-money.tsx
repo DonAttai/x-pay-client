@@ -1,45 +1,53 @@
 import { Label } from "../label";
 import { Input } from "../input";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axiosInstance from "@/hooks/axios";
-import { useUserId } from "@/store/auth-store";
 import { z } from "zod";
-import { FormEvent, useEffect, useRef } from "react";
-import { ValidationError, fromError } from "zod-validation-error";
+import { useEffect, useReducer, useState } from "react";
+import { fromError } from "zod-validation-error";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import { TransferMoneyDialog } from "./transfer-money-dialog";
+import { useTransferMoney } from "@/hooks/useTransferMoney";
 
-const schema = z.object({
+export type FormDataType = {
+  amount: string;
+  walletId: string;
+  description: string;
+};
+
+// transfer schema
+const transferSchema = z.object({
   walletId: z.string().length(10, { message: "Wallet Id is required" }),
-  amount: z.number().min(100, { message: "Amount must not be less that N100" }),
+  amount: z
+    .number()
+    .positive()
+    .min(100, { message: "Amount must not be less that N100" }),
   description: z.string().min(1, { message: "Description is required" }),
 });
 
 export const TransferMoney = () => {
-  const formRef = useRef<HTMLFormElement>(null);
-  const userId = useUserId();
-  const queryClient = useQueryClient();
-
-  const { data, mutate, isSuccess, isError, error } = useMutation({
-    mutationFn: async (userData: {
-      walletId: string;
-      amount: number;
-      type: string;
-      description: string;
-    }) => {
-      const res = await axiosInstance.post(`/${userId}/transactions`, userData);
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-    },
+  const [formData, setFormData] = useState<FormDataType>({
+    amount: "",
+    walletId: "",
+    description: "",
   });
+  const [isModalOpen, toggleModal] = useReducer((prev) => !prev, false);
+  const { data, isSuccess, isError, error, mutate, isPending } =
+    useTransferMoney();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   useEffect(() => {
     if (isSuccess) {
-      formRef.current?.reset();
       toast.success(data.message);
+      toggleModal();
+      setFormData({ amount: "", walletId: "", description: "" });
     }
     if (isError) {
       if (error instanceof AxiosError) {
@@ -50,38 +58,43 @@ export const TransferMoney = () => {
     }
   }, [isError, isSuccess, error]);
 
-  // handle submit
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData);
-    try {
-      const validatedData = schema.safeParse({ ...data, amount: +data.amount });
-      if (!validatedData.success) {
-        const error = fromError(validatedData.error);
-        throw error;
-      }
-      mutate({
-        ...validatedData.data,
-        type: "transfer",
+  const validateData = () => {
+    const data = transferSchema.safeParse({
+      ...formData,
+      amount: Number(formData.amount),
+    });
+    if (!data.success) {
+      const error = fromError(data.error);
+      toast.error(error.message, {
+        duration: 4000,
+        position: "top-right",
       });
-    } catch (err) {
-      if (err instanceof ValidationError) {
-        toast.error(err.message);
-      }
+      return;
     }
+    setFormData({ ...data.data, amount: String(data.data.amount) });
+    toggleModal();
+  };
+
+  // handle submit
+  const handleSubmit = (data: FormDataType) => {
+    mutate({ ...data, amount: Number(data.amount), type: "transfer" });
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit} ref={formRef}>
+      <form>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="wallet-id" className="text-right">
               WalletId
             </Label>
-            <Input id="wallet-id" name="walletId" className="col-span-3" />
+            <Input
+              id="wallet-id"
+              name="walletId"
+              value={formData.walletId}
+              className="col-span-3"
+              onChange={handleChange}
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="amount" className="text-right">
@@ -91,6 +104,8 @@ export const TransferMoney = () => {
               type="number"
               id="amount"
               name="amount"
+              value={formData.amount}
+              onChange={handleChange}
               placeholder="minimum of N100"
               className="col-span-3 outline-none"
             />
@@ -102,14 +117,33 @@ export const TransferMoney = () => {
             <Input
               id="description"
               name="description"
+              value={formData.description}
               className="col-span-3 outline-none"
+              onChange={handleChange}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Button variant={"outline"}>Send</Button>
+            <div className="col-span-4 flex justify-center">
+              <Button
+                type="button"
+                variant={"outline"}
+                onClick={() => {
+                  validateData();
+                }}
+              >
+                Transfer
+              </Button>
+            </div>
           </div>
         </div>
       </form>
+      <TransferMoneyDialog
+        isModalOpen={isModalOpen}
+        onClose={toggleModal}
+        handleSubmit={handleSubmit}
+        data={formData}
+        isPending={isPending}
+      />
     </>
   );
 };

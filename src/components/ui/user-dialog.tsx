@@ -11,7 +11,7 @@ import { Button } from "./button";
 import { UserType } from "@/hooks/use-user";
 import { getFullName } from "@/lib/utils";
 
-export function UserDetails({
+export function UserDialog({
   children,
   user,
 }: {

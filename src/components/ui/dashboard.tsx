@@ -26,9 +26,7 @@ export const DashboardHome = () => {
               <p>Balance: {isSuccess && formatted(+user.wallet.balance)}</p>
             </>
           ) : (
-            <div>
-              Create and Fund your wallet to start making transactions!wa
-            </div>
+            <div>Create and Fund your wallet to start making transactions!</div>
           )}
         </div>
       </div>

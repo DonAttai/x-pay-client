@@ -3,6 +3,7 @@ import { useAuth } from "@/store/auth-store";
 import { useEffect } from "react";
 import { useUser } from "@/hooks/use-user";
 import { Sidebar } from "@/components/ui/sidebar";
+import { Navbar } from "@/components/ui/navbar";
 import { Header } from "@/components/ui/header";
 
 export const Dashboard = () => {
@@ -32,7 +33,9 @@ export const Dashboard = () => {
       </aside>
 
       <div className="flex-1">
-        <Header />
+        <Header>
+          <Navbar />
+        </Header>
         <main className="mt-8 mr-32 ml-56">
           <Outlet />
         </main>

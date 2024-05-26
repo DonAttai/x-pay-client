@@ -90,7 +90,9 @@ export const FundWallet = () => {
           />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
-          <Button variant={"outline"}>Fund Wallet</Button>
+          <div className="col-span-4 flex justify-center">
+            <Button variant={"outline"}>Fund Wallet</Button>
+          </div>
         </div>
       </div>
     </form>

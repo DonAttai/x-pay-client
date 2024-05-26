@@ -34,17 +34,21 @@ import {
   TransferMoney,
 } from "@/components/ui/wallet";
 import { NotFound } from "@/pages/not-found.tsx";
+import { Settings } from "./pages/settings.tsx";
+import { NotVerified } from "./pages/not-verified.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
+      <Route path="not-verified " element={<NotVerified />} />
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
         <Route path="*" element={<NotFound />} />
         <Route path="dashboard" element={<Dashboard />}>
           <Route index element={<DashboardHome />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="wallet" element={<Wallet />}>
             <Route index element={<WalletHome />} />
