@@ -28,7 +28,7 @@ export const TransferMoneyDialog = ({
 }: PropType) => {
   // get beneficiary wallet
 
-  const { data: beneficiaryWallet, isSuccess } = useQuery({
+  const { data: beneficiaryWallet } = useQuery({
     queryKey: ["beneficiaryWallet", data.walletId],
     queryFn: async () => {
       const res = await axiosInstance.get(`users/wallets/${data.walletId}`);
