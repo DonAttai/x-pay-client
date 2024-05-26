@@ -3,6 +3,7 @@ import { Button } from "../button";
 import { FormDataType } from "./transfer-money";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/hooks/axios";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 function formatNaira(amount: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -36,7 +37,9 @@ export const TransferMoneyDialog = ({
     },
     enabled: !!data.walletId,
   });
-
+  const {
+    user: { lastName, firstName },
+  } = beneficiaryWallet;
   // return null when modal is closed
   if (!isModalOpen) return null;
 
@@ -45,9 +48,9 @@ export const TransferMoneyDialog = ({
       <DialogContent>
         {beneficiaryWallet
           ? `Transfer ${formatNaira(+data.amount)} to
-          ${beneficiaryWallet?.user.firstName} ${
-              beneficiaryWallet?.user.lastName
-            }`
+          ${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(
+              lastName
+            )}`
           : `${data.walletId} is invalid walletId`}
 
         <DialogFooter>
