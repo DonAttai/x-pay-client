@@ -29,7 +29,7 @@ export const TransferMoneyDialog = ({
 }: PropType) => {
   // get beneficiary wallet
 
-  const { data: beneficiaryWallet } = useQuery({
+  const { data: payeeWallet } = useQuery({
     queryKey: ["beneficiaryWallet", data.walletId],
     queryFn: async () => {
       const res = await axiosInstance.get(`users/wallets/${data.walletId}`);
@@ -37,27 +37,25 @@ export const TransferMoneyDialog = ({
     },
     enabled: !!data.walletId,
   });
-  const {
-    user: { lastName, firstName },
-  } = beneficiaryWallet;
+
   // return null when modal is closed
   if (!isModalOpen) return null;
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent>
-        {beneficiaryWallet
+        {payeeWallet
           ? `Transfer ${formatNaira(+data.amount)} to
-          ${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(
-              lastName
-            )}`
+          ${capitalizeFirstLetter(
+            payeeWallet.user.firstName
+          )} ${capitalizeFirstLetter(payeeWallet.user.lastName)}`
           : `${data.walletId} is not a valid walletId`}
 
         <DialogFooter>
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          {beneficiaryWallet && (
+          {payeeWallet && (
             <Button
               type="button"
               variant="outline"
