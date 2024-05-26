@@ -51,7 +51,7 @@ export const TransferMoneyDialog = ({
           ${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(
               lastName
             )}`
-          : `${data.walletId} is invalid walletId`}
+          : `${data.walletId} is not a valid walletId`}
 
         <DialogFooter>
           <Button variant="secondary" onClick={onClose}>
