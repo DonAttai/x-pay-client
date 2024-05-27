@@ -36,13 +36,15 @@ import {
 import { NotFound } from "@/pages/not-found.tsx";
 import { Settings } from "./pages/settings.tsx";
 import { NotVerified } from "./pages/not-verified.tsx";
+import { SuccessPage } from "./pages/success-page.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
-      <Route path="not-verified " element={<NotVerified />} />
+      <Route path="not-verified" element={<NotVerified />} />
+      <Route path="success-page" element={<SuccessPage />} />
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
         <Route path="*" element={<NotFound />} />

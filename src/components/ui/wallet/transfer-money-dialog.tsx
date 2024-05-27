@@ -4,6 +4,8 @@ import { FormDataType } from "./transfer-money";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/hooks/axios";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { useUser } from "@/hooks/use-user";
+import toast from "react-hot-toast";
 
 function formatNaira(amount: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -27,8 +29,9 @@ export const TransferMoneyDialog = ({
   handleSubmit,
   isPending,
 }: PropType) => {
-  // get beneficiary wallet
+  // const { data: user } = useUser();
 
+  // get beneficiary wallet
   const { data: payeeWallet } = useQuery({
     queryKey: ["beneficiaryWallet", data.walletId],
     queryFn: async () => {
@@ -37,6 +40,11 @@ export const TransferMoneyDialog = ({
     },
     enabled: !!data.walletId,
   });
+
+  // if (user?.wallet.id === data.walletId) {
+  //   toast.error("You are not allowed to make transfer to yourself");
+  //   return null;
+  // }
 
   // return null when modal is closed
   if (!isModalOpen) return null;
