@@ -4,8 +4,6 @@ import { FormDataType } from "./transfer-money";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/hooks/axios";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { useUser } from "@/hooks/use-user";
-import toast from "react-hot-toast";
 
 function formatNaira(amount: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -29,8 +27,6 @@ export const TransferMoneyDialog = ({
   handleSubmit,
   isPending,
 }: PropType) => {
-  // const { data: user } = useUser();
-
   // get beneficiary wallet
   const { data: payeeWallet } = useQuery({
     queryKey: ["beneficiaryWallet", data.walletId],
