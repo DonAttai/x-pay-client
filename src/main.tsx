@@ -28,15 +28,19 @@ import { PrivateRoute } from "@/components/ui/private-route.tsx";
 import { Users } from "@/pages/users";
 import { Register } from "@/pages/resgister.tsx";
 import {
-  Wallet,
   FundWallet,
   WalletHome,
   TransferMoney,
+  Wallet,
 } from "@/components/ui/wallet";
 import { NotFound } from "@/pages/not-found.tsx";
 import { Settings } from "./pages/settings.tsx";
 import { NotVerified } from "./pages/not-verified.tsx";
 import { SuccessPage } from "./pages/success-page.tsx";
+import { VerifyEmail } from "./pages/verify-email.tsx";
+import { ForgotPassword } from "./pages/forgot-password.tsx";
+import { ResetPassword } from "./pages/reset-password.tsx";
+import { Admin } from "./pages/admin.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,7 +48,13 @@ const router = createBrowserRouter(
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
       <Route path="not-verified" element={<NotVerified />} />
+      <Route path="verify-email" element={<VerifyEmail />} />
+      <Route path="forgot-password" element={<ForgotPassword />} />
+      <Route path="reset-password" element={<ResetPassword />} />
       <Route path="success-page" element={<SuccessPage />} />
+      <Route path="admin" element={<Admin />}>
+        <Route path="users" element={<Users />} />
+      </Route>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
         <Route path="*" element={<NotFound />} />
@@ -56,9 +66,6 @@ const router = createBrowserRouter(
             <Route index element={<WalletHome />} />
             <Route path="fund-wallet" element={<FundWallet />} />
             <Route path="transfer-money" element={<TransferMoney />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-            <Route path="users" element={<Users />} />
           </Route>
         </Route>
       </Route>

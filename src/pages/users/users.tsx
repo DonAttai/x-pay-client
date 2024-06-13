@@ -4,11 +4,6 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Loader } from "lucide-react";
 
-const fetchUsers = async () => {
-  const res = await axiosInstance.get("/users");
-  return res.data;
-};
-
 export const Users = () => {
   const {
     data: users,
@@ -16,8 +11,12 @@ export const Users = () => {
     isSuccess,
   } = useQuery({
     queryKey: ["users"],
-    queryFn: fetchUsers,
+    queryFn: async () => {
+      const res = await axiosInstance.get("/users");
+      return res.data;
+    },
   });
+
   if (isPending) {
     return (
       <div className="flex items-center justify-center h-screen text-3xl animate-spin">

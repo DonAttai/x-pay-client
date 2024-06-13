@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -20,4 +21,11 @@ export const getFullName = (firstName: string, lastName: string) => {
   return `${capitalizeFirstLetter(firstName)} ${capitalizeFirstLetter(
     lastName
   )}`;
+};
+
+export const toastSuccessMessage = (message: string) => {
+  return toast.success(message, { duration: 4000, position: "top-right" });
+};
+export const toastErrorMessage = (message: string) => {
+  return toast.error(message, { duration: 4000, position: "top-right" });
 };

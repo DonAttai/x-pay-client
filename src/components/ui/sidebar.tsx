@@ -1,7 +1,8 @@
-import { useUser } from "@/hooks/use-user";
-import { Home, ArrowLeftRight, Wallet, Users } from "lucide-react";
+import { Home, ArrowLeftRight, Wallet } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { CreateWallet } from "./create-wallet";
+import { useWallet } from "@/hooks/useWallet";
+import { Loader } from "lucide-react";
 
 interface MenuItem {
   label: string;
@@ -36,12 +37,16 @@ const isActiveStyles = {
 };
 
 export const Sidebar = () => {
-  const { data: user } = useUser();
+  const { data: wallet, isPending } = useWallet();
+
+  if (isPending) {
+    return <Loader className="animate-spin inline-block" />;
+  }
 
   return (
     <>
       <ul className="flex flex-col w-full p-4">
-        {user && user.wallet ? (
+        {wallet ? (
           <>
             {menuItems.map((item) => {
               const LinkIcon = item.icon!;
@@ -95,18 +100,6 @@ export const Sidebar = () => {
         ) : (
           <CreateWallet />
         )}
-        {user?.roles?.includes("admin") ? (
-          <NavLink
-            to="users"
-            className="text-sm mt-3"
-            style={({ isActive }) => {
-              return isActive ? isActiveStyles : {};
-            }}
-          >
-            <Users size={16} className="inline-block mr-2" />
-            Manage Users
-          </NavLink>
-        ) : null}
       </ul>
     </>
   );

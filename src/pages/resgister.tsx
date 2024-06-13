@@ -8,8 +8,9 @@ import axiosInstance from "../hooks/axios";
 import { AxiosError } from "axios";
 import { useAuth } from "@/store/auth-store";
 import { Loader } from "lucide-react";
+import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 export const Register = () => {
-  const userCredentials = useAuth();
+  const credentials = useAuth();
 
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -21,32 +22,40 @@ export const Register = () => {
     password: string;
   };
 
-  // mutation function
-  const registerUser = async (credentials: CredentialType) => {
-    const res = await axiosInstance.post("/auth/register", credentials);
-    return res.data;
-  };
-
-  const { isPending, mutate } = useMutation({
-    mutationFn: registerUser,
-    onSuccess: () => {
-      navigate("/login");
-      toast.success("Account Successfully created!");
-    },
-    onError: (err) => {
-      if (err instanceof AxiosError) toast.error(err.response?.data.message);
+  const { isPending, data, mutate, isSuccess, isError, error } = useMutation({
+    mutationFn: async (credentials: CredentialType) => {
+      const res = await axiosInstance.post("/auth/register", credentials);
+      return res.data;
     },
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/not-verified");
+      toastSuccessMessage(data.message);
+    }
+    if (isError) {
+      if (error instanceof AxiosError) {
+        const errorMessage: string =
+          error.response?.data.message || error.message;
+        toastErrorMessage(errorMessage);
+      }
+    }
+  }, [isSuccess, isError, error]);
 
   useEffect(() => {
     inputRef.current?.focus();
   });
 
   useEffect(() => {
-    if (userCredentials?.accessToken) {
+    if (credentials?.accessToken && credentials.isVerified) {
       navigate("/dashboard");
     }
-  }, [userCredentials, navigate]);
+
+    if (credentials?.accessToken && !credentials?.isVerified) {
+      navigate("/not-verified");
+    }
+  }, [credentials?.accessToken, credentials?.isVerified, navigate]);
 
   // handle regisetr
   const handleRegister = (e: FormEvent<HTMLFormElement>) => {
@@ -59,9 +68,7 @@ export const Register = () => {
     const values = [...formData.values()];
     if (values.includes("".trim()))
       return toast.error("All fields are required!");
-    mutate(userData as CredentialType, {
-      onSuccess: () => e.currentTarget.reset(),
-    });
+    mutate(userData as CredentialType);
   };
 
   return (
@@ -72,9 +79,7 @@ export const Register = () => {
           onSubmit={handleRegister}
           className="mx-auto w-5/6 md:w-1/3 p-5 bg-white text-slate-500 py-8 border rounded-md shadow appearance-none"
         >
-          <h1 className="text-center font-semibold text-xl mb-4">
-            Create account
-          </h1>
+          <h1 className="text-center font-semibold text-xl mb-4">Sign Up</h1>
           <div className="mb-4">
             <label className="font-bold text-sm" htmlFor="first-name">
               First Name

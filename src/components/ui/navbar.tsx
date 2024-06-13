@@ -1,5 +1,4 @@
-import { useUser } from "@/hooks/use-user";
-import { useAuthActions } from "@/store/auth-store";
+import { useAuth, useAuthActions } from "@/store/auth-store";
 import { Link, useNavigate } from "react-router-dom";
 import { Settings, UserCheck, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,7 @@ export const Navbar = () => {
     setIsOpen(false);
   };
   const { logOut } = useAuthActions();
-  const { data: user } = useUser();
+  const credentials = useAuth()!;
 
   const navigate = useNavigate();
 
@@ -39,16 +38,17 @@ export const Navbar = () => {
           variant={"outline"}
           className="rounded-full text-blue-400 w-10 h-10 font-bold border-none outline-none focus-visible:ring-0"
         >
-          {user &&
-            `${user?.firstName[0].toUpperCase()}${user?.lastName[0].toUpperCase()}`}
+          {credentials &&
+            `${credentials?.firstName[0].toUpperCase()}${credentials?.lastName[0].toUpperCase()}`}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>
           <UserCheck size={16} className=" inline-block mr-2" />
-          {`${capitalizeFirstLetter(user?.firstName!)} ${capitalizeFirstLetter(
-            user?.lastName!
-          )}`}
+          {credentials &&
+            `${capitalizeFirstLetter(
+              credentials?.firstName!
+            )} ${capitalizeFirstLetter(credentials?.lastName!)}`}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

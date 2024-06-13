@@ -3,7 +3,9 @@ import { Button } from "../button";
 import { FormDataType } from "./transfer-money";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/hooks/axios";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { capitalizeFirstLetter, toastErrorMessage } from "@/lib/utils";
+import { useWallet } from "@/hooks/useWallet";
+import { useEffect } from "react";
 
 function formatNaira(amount: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -27,20 +29,22 @@ export const TransferMoneyDialog = ({
   handleSubmit,
   isPending,
 }: PropType) => {
+  const { data: wallet } = useWallet();
   // get beneficiary wallet
   const { data: payeeWallet } = useQuery({
-    queryKey: ["beneficiaryWallet", data.walletId],
+    queryKey: ["payeeWallet", data.walletId],
     queryFn: async () => {
       const res = await axiosInstance.get(`users/wallets/${data.walletId}`);
       return res.data;
     },
-    enabled: !!data.walletId,
+    enabled: isModalOpen && !!data.walletId,
   });
 
-  // if (user?.wallet.id === data.walletId) {
-  //   toast.error("You are not allowed to make transfer to yourself");
-  //   return null;
-  // }
+  useEffect(() => {
+    if (wallet?.id === data.walletId && !isModalOpen) {
+      toastErrorMessage("You can't make transfer to yourself");
+    }
+  }, [data.walletId]);
 
   // return null when modal is closed
   if (!isModalOpen) return null;

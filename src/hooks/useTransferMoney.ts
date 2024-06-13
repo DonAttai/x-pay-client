@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "./axios";
-import { useUserId } from "@/store/auth-store";
+import { useAuth } from "@/store/auth-store";
 
 type UserDataType = {
   walletId: string;
@@ -9,21 +9,20 @@ type UserDataType = {
   description: string;
 };
 
-const postData = async (
-  userData: UserDataType,
-  userId: string
-): Promise<{ message: string }> => {
-  const res = await axiosInstance.post(`/${userId}/transactions`, userData);
-  return res.data;
-};
 export const useTransferMoney = () => {
-  const userId = useUserId() as string;
+  const credentials = useAuth()!;
+  const userId = credentials?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (userData: UserDataType) => postData(userData, userId),
+    mutationFn: async (
+      userData: UserDataType
+    ): Promise<{ message: string }> => {
+      const res = await axiosInstance.post(`/${userId}/transactions`, userData);
+      return res.data;
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
     },
   });
 };

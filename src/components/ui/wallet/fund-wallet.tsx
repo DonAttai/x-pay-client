@@ -1,5 +1,4 @@
 import axiosInstance from "@/hooks/axios";
-import { useUser } from "@/hooks/use-user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { FormEvent, useEffect } from "react";
@@ -9,6 +8,7 @@ import { ValidationError, fromError } from "zod-validation-error";
 import { Label } from "../label";
 import { Input } from "../input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/store/auth-store";
 
 const fundWalletSchema = z.object({
   amount: z.number().min(100),
@@ -29,10 +29,11 @@ export const FundWallet = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
     },
   });
-  const { data: user } = useUser();
+
+  const credentials = useAuth();
 
   useEffect(() => {
     if (isSuccess) {
@@ -66,7 +67,7 @@ export const FundWallet = () => {
       }
 
       const { data } = validatedData;
-      mutate({ amount: data.amount, email: user?.email! });
+      mutate({ amount: data.amount, email: credentials?.email! });
     } catch (err) {
       if (err instanceof ValidationError) {
         toast.error(err.message, { duration: 4000, position: "top-right" });

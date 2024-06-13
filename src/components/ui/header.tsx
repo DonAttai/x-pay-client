@@ -1,9 +1,11 @@
-import { useUser } from "@/hooks/use-user";
+import { useAuth } from "@/store/auth-store";
 import { useEffect, useState } from "react";
 
 export const Header = (props: { children: React.ReactNode }) => {
   const [greeting, setGreeting] = useState("");
-  const { data: user } = useUser();
+  // const { data: user } = useUser();
+
+  const credentials = useAuth();
 
   const navSection = [
     { title: "Transactions", path: "/dashboard/transactions" },
@@ -35,7 +37,7 @@ export const Header = (props: { children: React.ReactNode }) => {
         <div className="w-full h-full flex gap-2 justify-between pl-6 pr-32 items-center relative">
           {location.pathname === "/dashboard" ? (
             <p className="text-lg font-semibold">
-              {`${greeting}, ${user?.firstName?.toUpperCase()}`}
+              {`${greeting}, ${credentials?.firstName?.toUpperCase()}`}
             </p>
           ) : (
             navSection.map((section) => {

@@ -1,27 +1,30 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/store/auth-store";
 import { useEffect } from "react";
-import { useUser } from "@/hooks/use-user";
 import { Sidebar } from "@/components/ui/sidebar";
 import { Navbar } from "@/components/ui/navbar";
 import { Header } from "@/components/ui/header";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
-  const userCredentials = useAuth();
-  const { isPending } = useUser();
+  const credentials = useAuth();
 
   useEffect(() => {
-    if (!userCredentials) navigate("/login");
-  }, [userCredentials]);
+    if (!credentials?.accessToken) {
+      navigate("/login");
+    }
+    if (credentials?.accessToken && !credentials?.isVerified) {
+      navigate("/not-verified");
+    }
+  }, [credentials?.accessToken, credentials?.isVerified, navigate]);
 
-  if (isPending) {
-    return (
-      <div className="bg-gray-200 flex items-center justify-center h-screen text-3xl">
-        <p className="text-5xl text-blue-400 animate-bounce">X-PAY</p>
-      </div>
-    );
-  }
+  // if (isPending) {
+  //   return (
+  //     <div className="bg-gray-200 flex items-center justify-center h-screen text-3xl">
+  //       <p className="text-5xl text-blue-400 animate-bounce">X-PAY</p>
+  //     </div>
+  //   );
+  // }
   return (
     <section className="min-h-screen flex bg-gray-200 ">
       <aside className="bg-stone-50 fixed h-screen w-52 ">

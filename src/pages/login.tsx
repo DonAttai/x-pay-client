@@ -7,9 +7,6 @@ import { useAuth, useAuthActions } from "@/store/auth-store";
 // react-router-dom
 import { Link, useNavigate } from "react-router-dom";
 
-// react-hot-toast
-import toast from "react-hot-toast";
-
 // react-query
 import { useMutation } from "@tanstack/react-query";
 
@@ -19,9 +16,10 @@ import axiosInstance from "@/hooks/axios";
 // axios
 import { AxiosError } from "axios";
 import { Loader } from "lucide-react";
+import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 
 export const Login = () => {
-  const userCredentials = useAuth();
+  const credentials = useAuth();
   const { setCredentials } = useAuthActions();
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -32,22 +30,40 @@ export const Login = () => {
     return res.data;
   };
 
-  const { isPending, mutate: loginUser } = useMutation({
+  const {
+    data,
+    isPending,
+    mutate: loginUser,
+    isSuccess,
+    isError,
+    error,
+  } = useMutation({
     mutationFn: loginMutation,
-    onSuccess: (data) => {
-      setCredentials(data);
-    },
-    onError: (err) => {
-      if (err instanceof AxiosError) toast.error(err?.response?.data.message);
-    },
   });
 
   useEffect(() => {
-    if (userCredentials?.accessToken) {
-      navigate("/dashboard");
-      toast.success("Login Successful!");
+    if (isSuccess) {
+      setCredentials(data);
+      toastSuccessMessage("Login successful!");
     }
-  }, [navigate, userCredentials]);
+
+    if (isError) {
+      if (error instanceof AxiosError) {
+        const errorMessage = error?.response?.data.message;
+        toastErrorMessage(errorMessage);
+      }
+    }
+  }, [isSuccess, isError, error]);
+
+  useEffect(() => {
+    if (credentials?.accessToken && credentials?.isVerified) {
+      navigate("/dashboard");
+    }
+
+    if (credentials?.accessToken && !credentials?.isVerified) {
+      navigate("/not-verified");
+    }
+  }, [navigate, credentials?.accessToken, credentials?.isVerified]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -65,7 +81,7 @@ export const Login = () => {
     if (email.trim() && password.trim()) {
       loginUser({ email, password });
     } else {
-      toast.error("email and password are required!");
+      toastErrorMessage("email and password are required!");
     }
   };
 
@@ -77,9 +93,7 @@ export const Login = () => {
           onSubmit={handleLogin}
           className="mx-auto w-5/6 md:w-1/3 p-5 bg-white text-slate-500 py-8 border rounded-md shadow appearance-none"
         >
-          <h1 className="text-center font-semibold text-xl mb-4">
-            Login to your account
-          </h1>
+          <h1 className="text-center font-semibold text-xl mb-4">Sign In</h1>
           <div className="mb-4">
             <label className="font-bold text-sm" htmlFor="email">
               Email
@@ -109,7 +123,7 @@ export const Login = () => {
             />
           </div>
           <div className="text-sm mb-4 underline text-blue-400 duration-600  hover:text-blue-500">
-            <Link to="">Forgot password</Link>
+            <Link to="/forgot-password">Forgot password</Link>
           </div>
           <button
             className={`bg-blue-400 mb-4 w-full py-2 rounded-full text-white font-bold disabled:opacity-80 ${

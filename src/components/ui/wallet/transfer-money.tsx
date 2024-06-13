@@ -2,12 +2,13 @@ import { Label } from "../label";
 import { Input } from "../input";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import { fromError } from "zod-validation-error";
-import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import { TransferMoneyDialog } from "./transfer-money-dialog";
 import { useTransferMoney } from "@/hooks/useTransferMoney";
+import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
+import { useSearchParams } from "react-router-dom";
 
 export type FormDataType = {
   amount: string;
@@ -31,7 +32,13 @@ export const TransferMoney = () => {
     walletId: "",
     description: "",
   });
-  const [isModalOpen, toggleModal] = useReducer((prev) => !prev, false);
+  const [searchParams, setSearchParams] = useSearchParams({
+    isModalOpen: "false",
+  });
+
+  // get searchParams
+  const isModalOpen = searchParams.get("isModalOpen") === "true";
+
   const { data, isSuccess, isError, error, mutate, isPending } =
     useTransferMoney();
 
@@ -43,17 +50,30 @@ export const TransferMoney = () => {
     }));
   };
 
+  const openModal = () => {
+    setSearchParams((prev) => {
+      prev.set("isModalOpen", "true");
+      return prev;
+    });
+  };
+  const closeModal = () => {
+    setSearchParams((prev) => {
+      prev.set("isModalOpen", "false");
+      return prev;
+    });
+  };
+
   useEffect(() => {
     if (isSuccess) {
-      toast.success(data.message);
-      toggleModal();
+      toastSuccessMessage(data.message);
+      closeModal();
       setFormData({ amount: "", walletId: "", description: "" });
     }
     if (isError) {
       if (error instanceof AxiosError) {
-        const erroMessage: string =
+        const errorMessage: string =
           error.response?.data.message || error.message;
-        toast.error(erroMessage, { duration: 4000, position: "top-right" });
+        toastErrorMessage(errorMessage);
       }
     }
   }, [isError, isSuccess, error]);
@@ -65,14 +85,11 @@ export const TransferMoney = () => {
     });
     if (!data.success) {
       const error = fromError(data.error);
-      toast.error(error.message, {
-        duration: 4000,
-        position: "top-right",
-      });
+      toastErrorMessage(error.message);
       return;
     }
     setFormData({ ...data.data, amount: String(data.data.amount) });
-    toggleModal();
+    openModal();
   };
 
   // handle submit
@@ -139,7 +156,7 @@ export const TransferMoney = () => {
       </form>
       <TransferMoneyDialog
         isModalOpen={isModalOpen}
-        onClose={toggleModal}
+        onClose={closeModal}
         handleSubmit={handleSubmit}
         data={formData}
         isPending={isPending}
