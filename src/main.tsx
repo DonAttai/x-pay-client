@@ -24,7 +24,6 @@ import { Dashboard } from "@/pages/dashboard.tsx";
 
 import { Transactions } from "@/components/ui/transactions/";
 import { DashboardHome } from "@/components/ui/dashboard.tsx";
-import { PrivateRoute } from "@/components/ui/private-route.tsx";
 import { Users } from "@/pages/users";
 import { Register } from "@/pages/resgister.tsx";
 import {

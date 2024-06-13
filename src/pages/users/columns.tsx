@@ -1,11 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-import { UserType } from "@/hooks/use-user";
 import { getFullName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
 import { UserDialog } from "@/components/ui/user-dialog";
-export const columns: ColumnDef<UserType>[] = [
+import { UserCredentialsType } from "@/store/auth-store";
+export const columns: ColumnDef<UserCredentialsType>[] = [
   {
     header: "NAME",
     cell: ({ row }) => {

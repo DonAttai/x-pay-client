@@ -8,15 +8,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "./button";
-import { UserType } from "@/hooks/use-user";
 import { getFullName } from "@/lib/utils";
+import { UserCredentialsType } from "@/store/auth-store";
 
 export function UserDialog({
   children,
   user,
 }: {
   children: React.ReactNode;
-  user: UserType;
+  user: UserCredentialsType;
 }) {
   return (
     <Dialog>

@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-import { TransactionType } from "@/hooks/use-user";
 import { formatted } from "@/lib/utils";
+import { TransactionType } from "@/hooks/useTransactions";
 
 export const columns: ColumnDef<TransactionType>[] = [
   {
