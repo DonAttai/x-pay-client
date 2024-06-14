@@ -10,7 +10,7 @@ export type WalletType = {
 export const useWallet = () => {
   const credentials = useAuth()!;
   return useQuery({
-    queryKey: ["wallet", credentials.id],
+    queryKey: ["wallet", credentials?.id],
     queryFn: async (): Promise<WalletType> => {
       const res = await axiosInstance.get(`users/${credentials?.id}/wallet`);
       return res.data;
