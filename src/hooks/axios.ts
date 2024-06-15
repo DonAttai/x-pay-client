@@ -58,7 +58,6 @@ axiosInstance.interceptors.response.use(
           if (refreshError.response && refreshError.response.status === 403) {
             localStorage.removeItem("credentials");
             window.location.href = "/login";
-            toastErrorMessage("Your session has expired! Login again");
           }
         } else {
           toastErrorMessage("something went wrong!");
