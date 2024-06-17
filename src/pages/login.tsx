@@ -11,15 +11,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 
 // custom hooks
-import axiosInstance from "@/hooks/axios";
+// import axiosInstance from "@/hooks/axios";
 
 // axios
 import { AxiosError } from "axios";
+import useAxios from "@/hooks/useAxios";
 import { Loader } from "lucide-react";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 
 export const Login = () => {
   const credentials = useAuth();
+  const axiosInstance = useAxios();
   const { setCredentials } = useAuthActions();
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -44,7 +46,7 @@ export const Login = () => {
   useEffect(() => {
     if (isSuccess) {
       setCredentials(data);
-      toastSuccessMessage("Login successful!");
+      toastSuccessMessage("Logged in successful!");
     }
 
     if (isError) {

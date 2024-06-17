@@ -12,11 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { capitalizeFirstLetter, toastSuccessMessage } from "@/lib/utils";
 import { useState } from "react";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSelect = () => {
     setIsOpen(false);
@@ -24,10 +26,9 @@ export const Navbar = () => {
   const { logOut } = useAuthActions();
   const credentials = useAuth()!;
 
-  const navigate = useNavigate();
-
   const signOut = () => {
     logOut();
+    toastSuccessMessage("Logged out successfully");
     navigate("/login");
   };
 

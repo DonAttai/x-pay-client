@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { axiosInstance } from "@/hooks/useAxios";
 
 export type UserCredentialsType = {
   id: number;
@@ -34,9 +35,10 @@ const useAuthStore = create<AuthStore>()((set) => ({
     },
 
     // logout
-    logOut: () => {
+    logOut: async () => {
       localStorage.removeItem("credentials");
-      return set({ credentials: null });
+      axiosInstance.post("/auth/logout");
+      set({ credentials: null });
     },
   },
 }));

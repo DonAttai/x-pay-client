@@ -1,10 +1,11 @@
-import axiosInstance from "@/hooks/axios";
 import { useQuery } from "@tanstack/react-query";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Loader } from "lucide-react";
+import useAxios from "@/hooks/useAxios";
 
 export const Users = () => {
+  const axiosInstance = useAxios();
   const {
     data: users,
     isPending,

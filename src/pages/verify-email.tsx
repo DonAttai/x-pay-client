@@ -1,11 +1,11 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
-import axiosInstance from "@/hooks/axios";
 import { useEffect } from "react";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 import { useAuth } from "@/store/auth-store";
 import { AxiosError } from "axios";
+import useAxios from "@/hooks/useAxios";
 
 type DataType = {
   token: string;
@@ -17,6 +17,8 @@ export const VerifyEmail = () => {
   const allParams = Object.fromEntries(searchParams);
 
   const credentials = useAuth();
+
+  const axiosInstance = useAxios();
 
   const navigate = useNavigate();
 

@@ -1,4 +1,3 @@
-import axiosInstance from "@/hooks/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { FormEvent, useEffect } from "react";
@@ -9,6 +8,7 @@ import { Label } from "../label";
 import { Input } from "../input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/store/auth-store";
+import useAxios from "@/hooks/useAxios";
 
 const fundWalletSchema = z.object({
   amount: z.number().min(100),
@@ -16,6 +16,7 @@ const fundWalletSchema = z.object({
 
 export const FundWallet = () => {
   const queryClient = useQueryClient();
+  const axiosInstance = useAxios();
 
   const {
     data: paystackData,

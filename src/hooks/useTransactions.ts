@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "./axios";
 import { useAuth } from "@/store/auth-store";
+import useAxios from "./useAxios";
 
 export type TransactionType = {
   amount: string;
@@ -9,19 +9,21 @@ export type TransactionType = {
   createdAt: string;
   description: string;
 };
-const fetchTransactions = async (userId: number) => {
-  const res = await axiosInstance.get(`users/${userId}/transactions`);
-  const data: TransactionType[] = res.data;
-  return data.toSorted(
-    (a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt))
-  );
-};
 
 export const useTransactions = () => {
   const credentials = useAuth()!;
+  const axiosInstance = useAxios();
   return useQuery({
     queryKey: ["transactions", credentials?.id],
-    queryFn: () => fetchTransactions(credentials?.id),
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        `users/${credentials.id}/transactions`
+      );
+      const data: TransactionType[] = res.data;
+      return data.toSorted(
+        (a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt))
+      );
+    },
     enabled: !!credentials?.id,
   });
 };

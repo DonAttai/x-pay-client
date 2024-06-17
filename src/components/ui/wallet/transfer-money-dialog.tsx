@@ -2,10 +2,11 @@ import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "../button";
 import { FormDataType } from "./transfer-money";
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "@/hooks/axios";
+// import axiosInstance from "@/hooks/axios";
 import { capitalizeFirstLetter, toastErrorMessage } from "@/lib/utils";
 import { useWallet } from "@/hooks/useWallet";
 import { useEffect } from "react";
+import useAxios from "@/hooks/useAxios";
 
 function formatNaira(amount: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -30,6 +31,9 @@ export const TransferMoneyDialog = ({
   isPending,
 }: PropType) => {
   const { data: wallet } = useWallet();
+
+  const axiosInstance = useAxios();
+
   // get beneficiary wallet
   const { data: payeeWallet } = useQuery({
     queryKey: ["payeeWallet", data.walletId],

@@ -6,7 +6,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { useAuth } from "@/store/auth-store";
 
 export const Wallet = () => {
-  const { roles } = useAuth()!;
+  const credentials = useAuth()!;
   const { data: wallet, isSuccess } = useWallet();
 
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ export const Wallet = () => {
             Transfer Money
             <MoveUpRight size={16} className="ml-2" />
           </Button>
-          {roles.includes("admin") ? (
+          {credentials?.roles.includes("admin") ? (
             <>
               <Button variant={"outline"}>Deposite Money</Button>
               <Button variant={"outline"}>Withdraw Money</Button>

@@ -6,11 +6,11 @@ import { z } from "zod";
 import { fromError } from "zod-validation-error";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import axiosInstance from "@/hooks/axios";
 import { useAuth } from "@/store/auth-store";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { Loader } from "lucide-react";
+import useAxios from "@/hooks/useAxios";
 
 const schema = z.object({
   email: z.string().min(1, { message: "field is required" }).email(),
@@ -21,6 +21,8 @@ export const ForgotPassword = () => {
 
   const credentials = useAuth();
   const navigate = useNavigate();
+
+  const axiosInstance = useAxios();
 
   const { isPending, isSuccess, mutate, data, error, isError } = useMutation({
     mutationFn: async (data: {

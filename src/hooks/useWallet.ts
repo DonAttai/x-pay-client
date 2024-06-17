@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "./axios";
+// import axiosInstance from "./axios";
 import { useAuth } from "@/store/auth-store";
+import useAxios from "./useAxios";
 
 export type WalletType = {
   id: string;
@@ -9,6 +10,7 @@ export type WalletType = {
 
 export const useWallet = () => {
   const credentials = useAuth()!;
+  const axiosInstance = useAxios();
   return useQuery({
     queryKey: ["wallet", credentials?.id],
     queryFn: async (): Promise<WalletType> => {

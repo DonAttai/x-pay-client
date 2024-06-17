@@ -1,12 +1,13 @@
-import axiosInstance from "@/hooks/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { useAuth } from "@/store/auth-store";
+import useAxios from "@/hooks/useAxios";
 
 export const CreateWallet = () => {
   const queryClient = useQueryClient();
   const { id } = useAuth()!;
+  const axiosInstance = useAxios();
 
   const { isPending, mutate } = useMutation({
     mutationFn: async (id: number) => {
