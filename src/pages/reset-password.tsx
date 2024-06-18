@@ -9,7 +9,7 @@ import { fromError } from "zod-validation-error";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 import { useAuth } from "@/store/auth-store";
 import { AxiosError } from "axios";
-import useAxios from "@/hooks/useAxios";
+import axiosInstance from "@/lib/axios";
 
 const schema = z.object({
   password: z.string().min(1, { message: "field is required" }),
@@ -28,7 +28,6 @@ export const ResetPassword = () => {
 
   const navigate = useNavigate();
   const credentials = useAuth();
-  const axiosInstance = useAxios();
 
   const { isPending, isSuccess, mutate, data, error, isError } = useMutation({
     mutationFn: async (data: DataType): Promise<{ message: string }> => {

@@ -1,5 +1,5 @@
 import { useAuth, useAuthActions } from "@/store/auth-store";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Settings, UserCheck, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -18,8 +18,6 @@ import { useState } from "react";
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const navigate = useNavigate();
-
   const handleSelect = () => {
     setIsOpen(false);
   };
@@ -28,8 +26,7 @@ export const Navbar = () => {
 
   const signOut = () => {
     logOut();
-    toastSuccessMessage("Logged out successfully");
-    navigate("/login");
+    toastSuccessMessage("Logged out");
   };
 
   return (

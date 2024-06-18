@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/store/auth-store";
-import useAxios from "./useAxios";
+import axiosInstance from "@/lib/axios";
 
 export type TransactionType = {
   amount: string;
@@ -12,7 +12,6 @@ export type TransactionType = {
 
 export const useTransactions = () => {
   const credentials = useAuth()!;
-  const axiosInstance = useAxios();
   return useQuery({
     queryKey: ["transactions", credentials?.id],
     queryFn: async () => {

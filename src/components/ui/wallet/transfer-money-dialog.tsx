@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { capitalizeFirstLetter, toastErrorMessage } from "@/lib/utils";
 import { useWallet } from "@/hooks/useWallet";
 import { useEffect } from "react";
-import useAxios from "@/hooks/useAxios";
+import axiosInstance from "@/lib/axios";
 
 function formatNaira(amount: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -31,8 +31,6 @@ export const TransferMoneyDialog = ({
   isPending,
 }: PropType) => {
   const { data: wallet } = useWallet();
-
-  const axiosInstance = useAxios();
 
   // get beneficiary wallet
   const { data: payeeWallet } = useQuery({

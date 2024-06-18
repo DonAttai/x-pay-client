@@ -10,7 +10,7 @@ import { useAuth } from "@/store/auth-store";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { Loader } from "lucide-react";
-import useAxios from "@/hooks/useAxios";
+import axiosInstance from "@/lib/axios";
 
 const schema = z.object({
   email: z.string().min(1, { message: "field is required" }).email(),
@@ -21,8 +21,6 @@ export const ForgotPassword = () => {
 
   const credentials = useAuth();
   const navigate = useNavigate();
-
-  const axiosInstance = useAxios();
 
   const { isPending, isSuccess, mutate, data, error, isError } = useMutation({
     mutationFn: async (data: {

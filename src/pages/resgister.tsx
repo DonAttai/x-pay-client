@@ -8,11 +8,9 @@ import { AxiosError } from "axios";
 import { useAuth } from "@/store/auth-store";
 import { Loader } from "lucide-react";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
-import useAxios from "@/hooks/useAxios";
+import axiosInstance from "@/lib/axios";
 export const Register = () => {
   const credentials = useAuth();
-
-  const axiosInstance = useAxios();
 
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);

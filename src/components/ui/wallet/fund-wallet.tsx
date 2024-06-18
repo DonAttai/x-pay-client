@@ -8,7 +8,7 @@ import { Label } from "../label";
 import { Input } from "../input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/store/auth-store";
-import useAxios from "@/hooks/useAxios";
+import axiosInstance from "@/lib/axios";
 
 const fundWalletSchema = z.object({
   amount: z.number().min(100),
@@ -16,7 +16,6 @@ const fundWalletSchema = z.object({
 
 export const FundWallet = () => {
   const queryClient = useQueryClient();
-  const axiosInstance = useAxios();
 
   const {
     data: paystackData,

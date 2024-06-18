@@ -15,13 +15,12 @@ import { useMutation } from "@tanstack/react-query";
 
 // axios
 import { AxiosError } from "axios";
-import useAxios from "@/hooks/useAxios";
 import { Loader } from "lucide-react";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
+import axiosInstance from "@/lib/axios";
 
 export const Login = () => {
   const credentials = useAuth();
-  const axiosInstance = useAxios();
   const { setCredentials } = useAuthActions();
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -46,7 +45,7 @@ export const Login = () => {
   useEffect(() => {
     if (isSuccess) {
       setCredentials(data);
-      toastSuccessMessage("Logged in successful!");
+      toastSuccessMessage("Logged in!");
     }
 
     if (isError) {
@@ -131,7 +130,6 @@ export const Login = () => {
             className={`bg-blue-400 mb-4 w-full py-2 rounded-full text-white font-bold disabled:opacity-80 ${
               isPending ? "cursor-not-allowed" : ""
             }`}
-            type="submit"
             disabled={isPending}
           >
             {isPending ? (

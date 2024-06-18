@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 import { useAuth } from "@/store/auth-store";
 import { AxiosError } from "axios";
-import useAxios from "@/hooks/useAxios";
+import axiosInstance from "@/lib/axios";
 
 type DataType = {
   token: string;
@@ -17,8 +17,6 @@ export const VerifyEmail = () => {
   const allParams = Object.fromEntries(searchParams);
 
   const credentials = useAuth();
-
-  const axiosInstance = useAxios();
 
   const navigate = useNavigate();
 
