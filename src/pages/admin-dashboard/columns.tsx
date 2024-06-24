@@ -23,12 +23,20 @@ export const columns: ColumnDef<UserCredentialsType>[] = [
     header: "ROLE",
   },
   {
-    accessorKey: "isActive",
-    header: "ACTIVE",
+    header: "STATUS",
+    cell: ({ row }) => {
+      const { isActive } = row.original;
+      if (isActive) return <div>Active</div>;
+      else return <div>Inactive</div>;
+    },
   },
   {
-    accessorKey: "isVerified",
     header: "VERIFIED",
+    cell: ({ row }) => {
+      const { isVerified } = row.original;
+      if (isVerified) return <div>Yes</div>;
+      else return <div>No</div>;
+    },
   },
   {
     accessorKey: "createdAt",
