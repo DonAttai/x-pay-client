@@ -2,46 +2,25 @@ import { FormEvent, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
 
-import { AxiosError } from "axios";
 import { useAuth } from "@/store/auth-store";
 import { Loader } from "lucide-react";
-import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
-import axiosInstance from "@/lib/axios";
+import { useRegister } from "@/hooks/useRegister";
+
+type CredentialType = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};
+
 export const Register = () => {
   const credentials = useAuth();
 
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  type CredentialType = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-  };
-
-  const { isPending, data, mutate, isSuccess, isError, error } = useMutation({
-    mutationFn: async (credentials: CredentialType) => {
-      const res = await axiosInstance.post("/auth/register", credentials);
-      return res.data;
-    },
-  });
-
-  useEffect(() => {
-    if (isSuccess) {
-      navigate("/not-verified");
-      toastSuccessMessage(data.message);
-    }
-    if (isError) {
-      if (error instanceof AxiosError) {
-        const errorMessage: string =
-          error.response?.data.message || error.message;
-        toastErrorMessage(errorMessage);
-      }
-    }
-  }, [isSuccess, isError, error]);
+  const { mutate, isPending } = useRegister();
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -51,11 +30,7 @@ export const Register = () => {
     if (credentials?.accessToken && credentials.isVerified) {
       navigate("/dashboard");
     }
-
-    if (credentials?.accessToken && !credentials?.isVerified) {
-      navigate("/not-verified");
-    }
-  }, [credentials?.accessToken, credentials?.isVerified, navigate]);
+  }, [credentials?.accessToken, navigate]);
 
   // handle regisetr
   const handleRegister = (e: FormEvent<HTMLFormElement>) => {

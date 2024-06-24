@@ -24,7 +24,9 @@ export const useTransferMoney = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({
+        queryKey: ["wallet", "all transactions"],
+      });
     },
   });
 };

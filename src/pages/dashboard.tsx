@@ -13,18 +13,8 @@ export const Dashboard = () => {
     if (!credentials?.accessToken) {
       navigate("/login");
     }
-    if (credentials?.accessToken && !credentials?.isVerified) {
-      navigate("/not-verified");
-    }
-  }, [credentials?.accessToken, credentials?.isVerified, navigate]);
+  }, [credentials?.accessToken, navigate]);
 
-  // if (isPending) {
-  //   return (
-  //     <div className="bg-gray-200 flex items-center justify-center h-screen text-3xl">
-  //       <p className="text-5xl text-blue-400 animate-bounce">X-PAY</p>
-  //     </div>
-  //   );
-  // }
   return (
     <section className="min-h-screen flex bg-gray-200 ">
       <aside className="bg-stone-50 fixed h-screen w-52 ">

@@ -23,6 +23,7 @@ export const useTransactions = () => {
         (a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt))
       );
     },
+
     enabled: !!credentials?.id,
   });
 };

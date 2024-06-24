@@ -24,7 +24,7 @@ import { Dashboard } from "@/pages/dashboard.tsx";
 
 import { Transactions } from "@/components/ui/transactions/";
 import { DashboardHome } from "@/components/ui/dashboard.tsx";
-import { Users } from "@/pages/users";
+import { AdminDashboard, ManageUsers } from "@/pages/admin-dashboard/index.ts";
 import { Register } from "@/pages/resgister.tsx";
 import {
   FundWallet,
@@ -40,6 +40,8 @@ import { VerifyEmail } from "./pages/verify-email.tsx";
 import { ForgotPassword } from "./pages/forgot-password.tsx";
 import { ResetPassword } from "./pages/reset-password.tsx";
 import { Admin } from "./pages/admin.tsx";
+import { AdminLogin } from "./pages/admin-login.tsx";
+import { AllTransactions } from "./components/ui/all-transactions/all-transactions.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -51,8 +53,11 @@ const router = createBrowserRouter(
       <Route path="forgot-password" element={<ForgotPassword />} />
       <Route path="reset-password" element={<ResetPassword />} />
       <Route path="success-page" element={<SuccessPage />} />
-      <Route path="admin" element={<Admin />}>
-        <Route path="users" element={<Users />} />
+      <Route path="/admin" element={<AdminLogin />} />
+      <Route path="admin/dashboard" element={<Admin />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="manage-users" element={<ManageUsers />} />
+        <Route path="transactions" element={<AllTransactions />} />
       </Route>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />

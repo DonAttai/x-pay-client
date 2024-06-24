@@ -18,7 +18,8 @@ export const NotVerified = () => {
       <p className="text-5xl text-blue-400 animate-bounce">X-PAY</p>
       <p>
         A link has been sent to your email for verification, click on the link
-        to verify your email
+        to verify your email. Check your spam folder if you can't find the email
+        in your inbox.
       </p>
     </div>
   );

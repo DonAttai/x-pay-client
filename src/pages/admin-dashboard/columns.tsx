@@ -16,7 +16,7 @@ export const columns: ColumnDef<UserCredentialsType>[] = [
 
   {
     accessorKey: "email",
-    header: "Email",
+    header: "EMAIL",
   },
   {
     accessorKey: "roles",
@@ -25,6 +25,10 @@ export const columns: ColumnDef<UserCredentialsType>[] = [
   {
     accessorKey: "isActive",
     header: "ACTIVE",
+  },
+  {
+    accessorKey: "isVerified",
+    header: "VERIFIED",
   },
   {
     accessorKey: "createdAt",

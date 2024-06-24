@@ -1,21 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Loader } from "lucide-react";
-import axiosInstance from "@/lib/axios";
+import { useUsers } from "@/hooks/useUsers";
 
-export const Users = () => {
-  const {
-    data: users,
-    isPending,
-    isSuccess,
-  } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const res = await axiosInstance.get("/users");
-      return res.data;
-    },
-  });
+export const ManageUsers = () => {
+  const { data: users, isPending, isSuccess } = useUsers();
 
   if (isPending) {
     return (
@@ -26,14 +15,14 @@ export const Users = () => {
   }
 
   return (
-    <div>
+    <>
       {isSuccess && users.length ? (
-        <div className="bg-stone-50 rounded-md p-10">
+        <div className="rounded-md p-10">
           <DataTable columns={columns} data={users} />
         </div>
       ) : (
         <p>No Users available</p>
       )}
-    </div>
+    </>
   );
 };

@@ -37,7 +37,8 @@ export const Header = (props: { children: React.ReactNode }) => {
         <div className="w-full h-full flex gap-2 justify-between pl-6 pr-32 items-center relative">
           {location.pathname === "/dashboard" ? (
             <p className="text-lg font-semibold">
-              {`${greeting}, ${credentials?.firstName?.toUpperCase()}`}
+              {credentials &&
+                `${greeting}, ${credentials?.firstName?.toUpperCase()}`}
             </p>
           ) : (
             navSection.map((section) => {
