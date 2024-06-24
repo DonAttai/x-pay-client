@@ -121,7 +121,7 @@ export function CreateUserDialog() {
             <Input
               id="email"
               name="email"
-              defaultValue={formData.email}
+              value={formData.email}
               onChange={handleChange}
               className="col-span-3"
             />
@@ -133,7 +133,7 @@ export function CreateUserDialog() {
             <Input
               id="firstName"
               name="firstName"
-              defaultValue={formData.firstName}
+              value={formData.firstName}
               onChange={handleChange}
               className="col-span-3"
             />
@@ -145,7 +145,7 @@ export function CreateUserDialog() {
             <Input
               id="lastName"
               name="lastName"
-              defaultValue={formData.lastName}
+              value={formData.lastName}
               onChange={handleChange}
               className="col-span-3"
             />
@@ -158,7 +158,7 @@ export function CreateUserDialog() {
               type="password"
               id="password"
               name="password"
-              defaultValue={formData.password}
+              value={formData.password}
               onChange={handleChange}
               className="col-span-3"
             />
