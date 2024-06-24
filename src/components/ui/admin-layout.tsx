@@ -12,7 +12,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex min-h-screen">
       <SideBar />
-      <div className="flex flex-col w-full ml-64 bg-stone-50 ">
+      <div className="flex flex-col w-full ml-48 bg-stone-50 ">
         <Header user={credentials} />
         <main className="flex-grow overflow-y-auto px-4 py-6 content mt-4">
           {children}
@@ -24,8 +24,8 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 
 function SideBar() {
   return (
-    <aside className="fixed top-0 left-0 bg-gray-600 text-white w-64 min-h-screen overflow-y-auto sidebar">
-      <nav className="space-y-2">
+    <aside className="fixed top-0 left-0 bg-gray-600 text-white w-48 min-h-screen overflow-y-auto sidebar">
+      <nav className="space-y-2 mt-16">
         <NavLink
           to="/admin/dashboard"
           className={({ isActive }) =>
@@ -64,7 +64,7 @@ function Header({ user }: { user: UserCredentialsType }) {
     adminLogOut();
   };
   return (
-    <nav className="bg-blue-600 text-white fixed top-0 left-64 right-0 w-auto shadow-md z-10 navbar ">
+    <nav className="bg-blue-600 text-white fixed top-0 left-48 right-0 w-auto shadow-md z-10 navbar ">
       <div className="flex items-center justify-between px-4 py-2 w-full">
         <div className="text-xl px-3 py-2 font-bold inline-block mr-4">
           X-Pay Admin
