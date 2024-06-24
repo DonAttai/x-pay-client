@@ -11,8 +11,8 @@ export const Navbar = () => {
   };
 
   return (
-    <>
+    <div className="px-3 py-2 font-medium inline-block mr-4">
       <UserProfile user={credentials} signOut={signOut} />
-    </>
+    </div>
   );
 };
