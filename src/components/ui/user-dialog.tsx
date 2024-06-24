@@ -49,8 +49,8 @@ export function UserDialog({
   user: UserCredentialsType;
 }) {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    firstName: user.firstName,
+    lastName: user.lastName,
   });
   const [isActive, setIsActive] = useState(user.isActive);
   const [roles, setRole] = useState(user.roles[0]);
