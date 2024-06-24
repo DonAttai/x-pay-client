@@ -57,13 +57,23 @@ export function UserDialog({
 
   const queryClient = useQueryClient();
 
-  const { data, mutate, isPending, error, isError } = useMutation({
+  const { isSuccess, mutate, isPending } = useMutation({
     mutationFn: async (userData: UserType) => {
       const res = await axiosInstance.patch(`/users/${user.id}`, userData);
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      toastSuccessMessage(data.message);
+
       queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        const errorMessage: string =
+          error.response?.data.message || error.message;
+        toastErrorMessage(errorMessage);
+      }
     },
   });
 
@@ -77,18 +87,13 @@ export function UserDialog({
 
   // toast success message
   useEffect(() => {
-    if (data) {
-      toastSuccessMessage(data.message);
-    } else if (isError) {
-      if (error instanceof AxiosError) {
-        const errorMessage: string =
-          error.response?.data.message || error.message;
-        toastErrorMessage(errorMessage);
-      }
+    if (isSuccess) {
+      setFormData({ firstName: "", lastName: "" });
+      setRole("");
     }
-  }, [data, isError, error]);
+  }, [setFormData, setRole]);
 
-  // handle submit
+  // handle sub mit
   const handleSubmit = () => {
     const validatedData = updateUserSchema.safeParse({
       ...formData,

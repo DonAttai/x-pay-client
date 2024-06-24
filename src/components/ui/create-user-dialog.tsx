@@ -75,7 +75,7 @@ export function CreateUserDialog() {
       });
       setRole("");
     }
-  });
+  }, [setFormData, setRole]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
