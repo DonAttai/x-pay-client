@@ -49,8 +49,8 @@ export function UserDialog({
   user: UserCredentialsType;
 }) {
   const [formData, setFormData] = useState({
-    firstName: user.firstName,
-    lastName: user.lastName,
+    firstName: "",
+    lastName: "",
   });
   const [isActive, setIsActive] = useState(user.isActive);
   const [roles, setRole] = useState(user.roles[0]);
@@ -128,7 +128,7 @@ export function UserDialog({
             <Input
               id="name"
               name="firstName"
-              defaultValue={formData.firstName}
+              defaultValue={user.firstName}
               className="col-span-3"
               onChange={handleChange}
             />
@@ -140,7 +140,7 @@ export function UserDialog({
             <Input
               id="username"
               name="lastName"
-              defaultValue={formData.lastName}
+              defaultValue={user.lastName}
               className="col-span-3"
               onChange={handleChange}
             />
