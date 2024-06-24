@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
@@ -46,20 +46,13 @@ export function CreateUserDialog() {
     password: "",
   });
 
-  const { mutate, isPending } = useMutation({
+  const { isSuccess, mutate, isPending } = useMutation({
     mutationFn: async (userData: UserType) => {
       const res = await axiosInstance.post("/auth/register", userData);
       return res.data;
     },
     onSuccess: (data) => {
       toastSuccessMessage(data.message);
-      setFormData({
-        email: "",
-        firstName: "",
-        lastName: "",
-        password: "",
-      });
-      setRole("");
     },
 
     onError: (error) => {
@@ -70,6 +63,18 @@ export function CreateUserDialog() {
         toastErrorMessage(error.message);
       }
     },
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setFormData({
+        email: "",
+        firstName: "",
+        lastName: "",
+        password: "",
+      });
+      setRole("");
+    }
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
