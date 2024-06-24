@@ -44,7 +44,7 @@ export const AdminDashboard = () => {
   ]);
 
   return (
-    <div className="p-4">
+    <div className="p-4 mt-8">
       <h1 className="text-2xl font-bold mb-4">Dashboard Overview</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded shadow">
@@ -63,11 +63,12 @@ export const AdminDashboard = () => {
           <h2 className="text-xl font-bold">Total Transactions</h2>
           <p className="text-3xl">{transactions && transactions.length}</p>
         </div>
-        <div className="bg-white p-4 rounded shadow">
+        <div className="bg-white p-4 rounded shadow w-full">
           <h2 className="text-xl font-bold">Total Amount Transacted</h2>
-          <p className="text-3xl">{totalAmount && formatted(totalAmount)}</p>
+          <p className="text-3xl truncate">
+            {totalAmount && formatted(totalAmount)}
+          </p>
         </div>
-        {/* Add more statistics as necessary */}
       </div>
     </div>
   );

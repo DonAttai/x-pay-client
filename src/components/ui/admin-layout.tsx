@@ -10,12 +10,12 @@ import { UserProfile } from "./user-profile";
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const credentials = useAuth()!;
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <SideBar />
-      <div className="flex-1 min-h-screen bg-stone-50 ">
+      <div className="flex flex-col w-full ml-64 bg-stone-50 ">
         <Header user={credentials} />
-        <main className="p-4">
-          <main>{children}</main>
+        <main className="flex-grow overflow-y-auto px-4 py-6 content mt-4">
+          {children}
         </main>
       </div>
     </div>
@@ -24,7 +24,7 @@ export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 
 function SideBar() {
   return (
-    <aside className="bg-gray-600 text-white w-64 min-h-screen p-4">
+    <aside className="fixed top-0 left-0 bg-gray-600 text-white w-64 min-h-screen overflow-y-auto sidebar">
       <nav className="space-y-2">
         <NavLink
           to="/admin/dashboard"
@@ -64,11 +64,15 @@ function Header({ user }: { user: UserCredentialsType }) {
     adminLogOut();
   };
   return (
-    <header className="bg-blue-600 text-white p-4 pr-10 flex justify-between items-center">
-      <div className="text-lg font-bold">X-Pay Admin</div>
-      <div className="flex items-center">
-        <UserProfile user={user} signOut={signOut} />
+    <nav className="bg-blue-600 text-white fixed top-0 left-64 right-0 w-auto shadow-md z-10 navbar ">
+      <div className="flex items-center justify-between px-4 py-2 w-full">
+        <div className="text-xl px-3 py-2 font-bold inline-block mr-4">
+          X-Pay Admin
+        </div>
+        <div className="px-3 py-2 font-medium inline-block mr-4">
+          <UserProfile user={user} signOut={signOut} />
+        </div>
       </div>
-    </header>
+    </nav>
   );
 }
