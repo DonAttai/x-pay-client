@@ -1,11 +1,12 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/store/auth-store";
-import { useEffect } from "react";
+import { useEffect, useReducer } from "react";
 import { Sidebar } from "@/components/ui/sidebar";
 import { Navbar } from "@/components/ui/navbar";
 import { Header } from "@/components/ui/header";
 
 export const Dashboard = () => {
+  const [isDropDownOpen, toggleDropDown] = useReducer((prev) => !prev, false);
   const navigate = useNavigate();
   const credentials = useAuth();
 
@@ -22,7 +23,10 @@ export const Dashboard = () => {
           <p className="text-blue-400 text-2xl">X-PAY</p>
         </div>
         <hr />
-        <Sidebar />
+        <Sidebar
+          isDropDownOpen={isDropDownOpen}
+          toggleDropDown={toggleDropDown}
+        />
       </aside>
 
       <div className="flex-1">
