@@ -26,12 +26,7 @@ import { Transactions } from "@/components/ui/transactions/";
 import { DashboardHome } from "@/components/ui/dashboard.tsx";
 import { AdminDashboard, ManageUsers } from "@/pages/admin-dashboard/index.ts";
 import { Register } from "@/pages/resgister.tsx";
-import {
-  FundWallet,
-  WalletHome,
-  TransferMoney,
-  Wallet,
-} from "@/components/ui/wallet";
+import { FundWallet, TransferMoney, Wallet } from "@/components/ui/wallet";
 import { NotFound } from "@/pages/not-found.tsx";
 import { Settings } from "./pages/settings.tsx";
 import { NotVerified } from "./pages/not-verified.tsx";
@@ -67,7 +62,6 @@ const router = createBrowserRouter(
           <Route path="settings" element={<Settings />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="wallet" element={<Wallet />}>
-            <Route index element={<WalletHome />} />
             <Route path="fund-wallet" element={<FundWallet />} />
             <Route path="transfer-money" element={<TransferMoney />} />
           </Route>
@@ -80,8 +74,8 @@ const router = createBrowserRouter(
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30 * 1000,
-      refetchInterval: 30 * 1000,
+      staleTime: 60 * 1000,
+      refetchInterval: 60 * 1000,
     },
   },
 });
