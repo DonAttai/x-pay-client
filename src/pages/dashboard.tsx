@@ -29,7 +29,7 @@ export const Dashboard = () => {
         <Header>
           <Navbar />
         </Header>
-        <main className="mt-8 mr-32 ml-56">
+        <main className="flex flex-col items-center mt-8 mr-32 ml-56">
           <Outlet />
         </main>
       </div>

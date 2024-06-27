@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -16,50 +15,56 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
 
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
-import { fromError } from "zod-validation-error";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 import { AxiosError } from "axios";
 import { Loader } from "lucide-react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const schema = z.object({
+const formSchema = z.object({
   email: z.string().email(),
-  firstName: z.string().min(1, { message: "required" }),
-  lastName: z.string().min(1, { message: "required" }),
-  password: z.string().min(1, { message: "required" }),
-  role: z.string().min(1),
+  firstName: z.string().min(1, { message: "First Name is required" }),
+  lastName: z.string().min(1, { message: "Last Name required" }),
+  password: z.string().min(1, { message: "Password is required" }),
+  roles: z.string().min(1, { message: "Role is required" }),
 });
-type UserType = z.infer<typeof schema>;
+type FormDataType = z.infer<typeof formSchema>;
 
 export function CreateUserDialog() {
-  const [role, setRole] = useState("");
-
-  const [formData, setFormData] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    password: "",
+  const form = useForm<FormDataType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      firstName: "",
+      lastName: "",
+      roles: "",
+    },
   });
 
+  const queryClient = useQueryClient();
+
   const { mutate, isPending } = useMutation({
-    mutationFn: async (userData: UserType) => {
+    mutationFn: async (userData: FormDataType) => {
       const res = await axiosInstance.post("/auth/register", userData);
       return res.data;
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       toastSuccessMessage(data.message);
-      setFormData({
-        email: "",
-        firstName: "",
-        lastName: "",
-        password: "",
-      });
-      setRole("");
+      form.reset();
     },
 
     onError: (error) => {
@@ -72,33 +77,13 @@ export function CreateUserDialog() {
     },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = () => {
-    const validatedData = schema.safeParse({
-      ...formData,
-      role,
-    });
-
-    if (!validatedData.success) {
-      const error = fromError(validatedData.error);
-      toastErrorMessage(error.message);
-      return;
-    }
-
-    mutate(validatedData.data);
+  const onSubmit = (values: FormDataType) => {
+    mutate(values);
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {/* <Button variant="secondary">Create User</Button> */}
         <p>Create User</p>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -109,82 +94,102 @@ export function CreateUserDialog() {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">
-              Email
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="firstName" className="text-right">
-              First Name
-            </Label>
-            <Input
-              id="firstName"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="lastName" className="text-right">
-              Last Name
-            </Label>
-            <Input
-              id="lastName"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="password" className="text-right">
-              Password
-            </Label>
-            <Input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Role</Label>
-            <Select value={role} onValueChange={(role) => setRole(role)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="user">User</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="First Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Last Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Password"
+                        type="password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="roles"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select user role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="w-full text-lg"
+              >
+                {isPending ? (
+                  <Loader className="animate-spin inline-block" />
+                ) : (
+                  "Create User"
+                )}
+              </Button>
+            </form>
+          </Form>
         </div>
-        <DialogFooter>
-          <Button
-            type="submit"
-            variant="outline"
-            disabled={isPending}
-            onClick={handleSubmit}
-          >
-            {isPending ? (
-              <Loader className="animate-spin inline-block" />
-            ) : (
-              "Create User"
-            )}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

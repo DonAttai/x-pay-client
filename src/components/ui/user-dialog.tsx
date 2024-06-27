@@ -2,13 +2,11 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "./button";
-import { Label } from "./label";
 import { Input } from "./input";
 import {
   getFullName,
@@ -16,11 +14,9 @@ import {
   toastSuccessMessage,
 } from "@/lib/utils";
 import { UserCredentialsType } from "@/store/auth-store";
-import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
 import { z } from "zod";
-import { fromError } from "zod-validation-error";
 import { AxiosError } from "axios";
 import {
   Select,
@@ -31,15 +27,25 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader } from "lucide-react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const updateUserSchema = z.object({
-  firstName: z.string().min(1, { message: "required" }),
-  lastName: z.string().min(1, { message: "required" }),
+const formSchema = z.object({
+  firstName: z.string().min(1, { message: "First Name is required" }),
+  lastName: z.string().min(1, { message: "Last Name is required" }),
   isActive: z.boolean(),
-  roles: z.string(),
+  roles: z.string().min(1, { message: "Role is required" }),
 });
 
-type UserType = z.infer<typeof updateUserSchema>;
+type FormDataType = z.infer<typeof formSchema>;
 
 export function UserDialog({
   children,
@@ -48,17 +54,20 @@ export function UserDialog({
   children: React.ReactNode;
   user: UserCredentialsType;
 }) {
-  const [formData, setFormData] = useState({
-    firstName: user.firstName,
-    lastName: user.lastName,
+  const form = useForm<FormDataType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      isActive: user.isActive,
+      roles: user.roles[0],
+    },
   });
-  const [isActive, setIsActive] = useState(user.isActive);
-  const [roles, setRole] = useState(user.roles[0]);
 
   const queryClient = useQueryClient();
 
-  const { isSuccess, mutate, isPending } = useMutation({
-    mutationFn: async (userData: UserType) => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (userData: FormDataType) => {
       const res = await axiosInstance.patch(`/users/${user.id}`, userData);
       return res.data;
     },
@@ -77,37 +86,8 @@ export function UserDialog({
     },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // toast success message
-  useEffect(() => {
-    if (isSuccess) {
-      setFormData({ firstName: "", lastName: "" });
-      setRole("");
-    }
-  }, [setFormData, setRole]);
-
-  // handle sub mit
-  const handleSubmit = () => {
-    const validatedData = updateUserSchema.safeParse({
-      ...formData,
-      isActive,
-      roles,
-    });
-
-    if (!validatedData.success) {
-      const error = fromError(validatedData.error);
-      toastErrorMessage(error.message);
-      return;
-    }
-
-    mutate(validatedData.data);
+  const onSubmit = (values: FormDataType) => {
+    mutate(values);
   };
 
   return (
@@ -121,69 +101,94 @@ export function UserDialog({
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              First Name
-            </Label>
-            <Input
-              id="name"
-              name="firstName"
-              defaultValue={user.firstName}
-              className="col-span-3"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Last Name
-            </Label>
-            <Input
-              id="username"
-              name="lastName"
-              defaultValue={user.lastName}
-              className="col-span-3"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="role" className="text-right">
-              Role
-            </Label>
-            <Select value={roles} onValueChange={(role) => setRole(role)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="user">User</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="First Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Last Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="active" className="text-right">
-              Active
-            </Label>
-            <Checkbox
-              id="active"
-              checked={isActive}
-              onCheckedChange={(value: boolean) => setIsActive(value)}
-            />
-          </div>
+              <FormField
+                control={form.control}
+                name="roles"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select user role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        {user.isActive
+                          ? "Click to deactivate account"
+                          : "Click to activate account"}
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="w-full text-lg"
+              >
+                {isPending ? (
+                  <Loader className="animate-spin inline-block" />
+                ) : (
+                  "Edit"
+                )}
+              </Button>
+            </form>
+          </Form>
         </div>
-        <DialogFooter>
-          <Button
-            variant={"outline"}
-            disabled={isPending}
-            onClick={handleSubmit}
-          >
-            {isPending ? (
-              <Loader className="animate-spin inline-block" />
-            ) : (
-              " Save changes"
-            )}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

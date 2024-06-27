@@ -1,20 +1,50 @@
-import { FormEvent, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 import { useAuth } from "@/store/auth-store";
 import { Loader } from "lucide-react";
 import { useRegister } from "@/hooks/useRegister";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-type CredentialType = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-};
+const formSchema = z.object({
+  firstName: z.string().min(1, { message: "Required" }),
+  lastName: z.string().min(1, { message: "Required" }),
+  email: z.string().email().min(1),
+  password: z.string().min(3, { message: "Password is required" }),
+});
+
+export type CredentialType = z.infer<typeof formSchema>;
 
 export const Register = () => {
+  const form = useForm<CredentialType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    },
+  });
   const credentials = useAuth();
 
   const navigate = useNavigate();
@@ -32,110 +62,103 @@ export const Register = () => {
     }
   }, [credentials?.accessToken, navigate]);
 
-  // handle regisetr
-  const handleRegister = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-
-    const userData = Object.fromEntries(formData);
-
-    const values = [...formData.values()];
-    if (values.includes("".trim()))
-      return toast.error("All fields are required!");
-    mutate(userData as CredentialType);
+  const onSubmit = (values: CredentialType) => {
+    mutate(values);
   };
 
   return (
-    <section className="flex h-screen items-center bg-stone-50">
-      <div className=" container mx-auto flex flex-col items-center gap-4 py-4">
-        <h2 className="text-2xl text-blue-400">X-PAY</h2>
-        <form
-          onSubmit={handleRegister}
-          className="mx-auto w-5/6 md:w-1/3 p-5 bg-white text-slate-500 py-8 border rounded-md shadow appearance-none"
-        >
-          <h1 className="text-center font-semibold text-xl mb-4">Sign Up</h1>
-          <div className="mb-4">
-            <label className="font-bold text-sm" htmlFor="first-name">
-              First Name
-            </label>
-
-            <input
-              className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="text"
-              id="first-name"
-              ref={inputRef}
-              name="firstName"
-              placeholder="First Name"
-              // autoComplete="off"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="font-bold text-sm" htmlFor="last-name">
-              Last Name
-            </label>
-
-            <input
-              className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="text"
-              id="last-name"
-              name="lastName"
-              placeholder="Last Name"
-              // autoComplete="off"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="font-bold text-sm" htmlFor="email">
-              Email
-            </label>
-
-            <input
-              className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="text"
-              id="email"
-              name="email"
-              placeholder="Email"
-              // autoComplete="off"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="font-bold text-sm" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Password"
-              // autoComplete="new-password"
-            />
-          </div>
-
-          <button
-            className={`bg-blue-400 mb-4 w-full py-2 rounded-full text-white font-bold disabled:opacity-80 ${
-              isPending ? "cursor-not-allowed" : ""
-            }`}
-            type="submit"
-            disabled={isPending}
-          >
-            {isPending ? (
-              <Loader className="animate-spin inline-block" />
-            ) : (
-              "Create account"
-            )}
-          </button>
-          <p className="text-sm">
-            Already have an account?
-            <Link
-              to="/login"
-              className="underline ml-2  text-blue-400 hover:text-blue-600 duration-500"
+    <section className="flex flex-col h-screen items-center justify-center bg-stone-50">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-blue-300 text-center">X-Pay</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-3"
             >
-              Sign in
-            </Link>
-          </p>
-        </form>
-      </div>
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="First Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Last Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Password"
+                        type="password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="font-bold text-lg self-center md:w-2/3 sm:w-full"
+              >
+                {isPending ? (
+                  <Loader className="animate-spin inline-block" />
+                ) : (
+                  "Sign up"
+                )}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter>
+          Already have an account?
+          <Link
+            to="/login"
+            className="underline ml-2  text-blue-400 hover:text-blue-600 duration-500"
+          >
+            Sign in!
+          </Link>
+        </CardFooter>
+      </Card>
     </section>
   );
 };

@@ -1,37 +1,48 @@
-import { Label } from "../label";
 import { Input } from "../input";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { fromError } from "zod-validation-error";
 import { AxiosError } from "axios";
 import { TransferMoneyDialog } from "./transfer-money-dialog";
 import { useTransferMoney } from "@/hooks/useTransferMoney";
 import { toastErrorMessage, toastSuccessMessage } from "@/lib/utils";
 import { useSearchParams } from "react-router-dom";
-
-export type FormDataType = {
-  amount: string;
-  walletId: string;
-  description: string;
-};
+import { CardContent, CardHeader, CardTitle } from "../card";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../form";
 
 // transfer schema
-const transferSchema = z.object({
-  walletId: z.string().length(10, { message: "Wallet Id is required" }),
-  amount: z
+const formSchema = z.object({
+  walletId: z.string().length(10, { message: "WalletId must be 10 digit" }),
+  amount: z.coerce
     .number()
     .positive()
-    .min(100, { message: "Amount must not be less that N100" }),
-  description: z.string().min(1, { message: "Description is required" }),
+    .gte(100, { message: "Amount must not be less that N100" }),
+  description: z.string().min(3, { message: "Description is required" }),
 });
 
+export type FormDataType = z.infer<typeof formSchema>;
+const defaultValues = {
+  amount: 100,
+  walletId: "",
+  description: "",
+};
+
 export const TransferMoney = () => {
-  const [formData, setFormData] = useState<FormDataType>({
-    amount: "",
-    walletId: "",
-    description: "",
+  const [formData, setFormData] = useState<FormDataType>(defaultValues);
+  const form = useForm<FormDataType>({
+    resolver: zodResolver(formSchema),
+    defaultValues,
   });
+
   const [searchParams, setSearchParams] = useSearchParams({
     isModalOpen: "false",
   });
@@ -41,14 +52,6 @@ export const TransferMoney = () => {
 
   const { data, isSuccess, isError, error, mutate, isPending } =
     useTransferMoney();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
 
   const openModal = () => {
     setSearchParams((prev) => {
@@ -66,8 +69,8 @@ export const TransferMoney = () => {
   useEffect(() => {
     if (isSuccess) {
       toastSuccessMessage(data.message);
+      form.reset();
       closeModal();
-      setFormData({ amount: "", walletId: "", description: "" });
     }
     if (isError) {
       if (error instanceof AxiosError) {
@@ -78,89 +81,79 @@ export const TransferMoney = () => {
     }
   }, [isError, isSuccess, error]);
 
-  const validateData = () => {
-    const data = transferSchema.safeParse({
-      ...formData,
-      amount: Number(formData.amount),
-    });
-    if (!data.success) {
-      const error = fromError(data.error);
-      toastErrorMessage(error.message);
-      return;
-    }
-    setFormData({ ...data.data, amount: String(data.data.amount) });
+  const onSubmit = (values: FormDataType) => {
+    setFormData(values);
     openModal();
-  };
-
-  // handle submit
-  const handleSubmit = (data: FormDataType) => {
-    mutate({ ...data, amount: Number(data.amount), type: "transfer" });
   };
 
   return (
     <>
-      <form>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="wallet-id" className="text-right">
-              WalletId
-            </Label>
-            <Input
-              id="wallet-id"
+      <CardHeader>
+        <CardTitle className="text-center">Transfer Money</CardTitle>
+      </CardHeader>
+      <CardContent className="flex justify-center w-full fit-content">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-3 md:w-3/4 sm:w-ful"
+          >
+            <FormField
+              control={form.control}
               name="walletId"
-              value={formData.walletId}
-              className="col-span-3"
-              onChange={handleChange}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>WalletId</FormLabel>
+                  <FormControl>
+                    <Input placeholder="walletId" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="amount" className="text-right">
-              Amount
-            </Label>
-            <Input
-              type="number"
-              id="amount"
+            <FormField
+              control={form.control}
               name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              placeholder="minimum of N100"
-              className="col-span-3 outline-none"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Amount" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description" className="text-right">
-              Description
-            </Label>
-            <Input
-              id="description"
+            <FormField
+              control={form.control}
               name="description"
-              value={formData.description}
-              className="col-span-3 outline-none"
-              onChange={handleChange}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Description" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <div className="col-span-4 flex justify-center">
-              <Button
-                type="button"
-                variant={"outline"}
-                onClick={() => {
-                  validateData();
-                }}
-              >
-                Transfer
-              </Button>
-            </div>
-          </div>
-        </div>
-      </form>
-      <TransferMoneyDialog
-        isModalOpen={isModalOpen}
-        onClose={closeModal}
-        handleSubmit={handleSubmit}
-        data={formData}
-        isPending={isPending}
-      />
+
+            <Button
+              type="submit"
+              className="font-bold text-lg self-center md:w-2/3 sm:w-full"
+              onClick={() => {}}
+            >
+              Transfer
+            </Button>
+          </form>
+          <TransferMoneyDialog
+            isModalOpen={isModalOpen}
+            onClose={closeModal}
+            mutate={mutate}
+            formData={formData}
+            isPending={isPending}
+          />
+        </Form>
+      </CardContent>
     </>
   );
 };

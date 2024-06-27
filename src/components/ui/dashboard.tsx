@@ -19,17 +19,15 @@ export const DashboardHome = () => {
 
   return (
     <div>
-      <div className="bg-stone-50 rounded-md p-10 mb-4">
-        <div className="flex justify-between mb-8">
-          {wallet ? (
-            <>
-              <p>Wallet ID: {isWallet && wallet.id}</p>
-              <p>Balance: {isWallet && formatted(+wallet.balance)}</p>
-            </>
-          ) : (
-            <div>Create and Fund your wallet to start making transactions!</div>
-          )}
-        </div>
+      <div className="bg-stone-50 rounded-md">
+        {wallet ? (
+          <div className="flex justify-between mb-4 p-8">
+            <p>Wallet ID: {isWallet && wallet.id}</p>
+            <p>Balance: {isWallet && formatted(+wallet.balance)}</p>
+          </div>
+        ) : (
+          <div>Create and Fund your wallet to start making transactions!</div>
+        )}
       </div>
       {isTransaction && transactions?.length ? (
         <div className="bg-stone-50 rounded-md p-10">

@@ -18,6 +18,9 @@ export const ManageUsers = () => {
     <>
       {isSuccess && users.length ? (
         <div className="rounded-md p-10">
+          <h3 className="mb-4 mt-8 text-center text-xl font-bold">
+            Account Management
+          </h3>
           <DataTable columns={columns} data={users} />
         </div>
       ) : (

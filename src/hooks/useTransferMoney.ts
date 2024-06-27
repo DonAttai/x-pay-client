@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/store/auth-store";
 import axiosInstance from "@/lib/axios";
 
-type UserDataType = {
+export type TransferMoneyType = {
   walletId: string;
   amount: number;
   type: string;
@@ -15,7 +15,7 @@ export const useTransferMoney = () => {
 
   return useMutation({
     mutationFn: async (
-      userData: UserDataType
+      userData: TransferMoneyType
     ): Promise<{ message: string }> => {
       const res = await axiosInstance.post(
         `/${credentials.id}/transactions`,

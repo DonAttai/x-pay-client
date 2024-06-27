@@ -1,101 +1,101 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { FormEvent, useEffect } from "react";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import { ValidationError, fromError } from "zod-validation-error";
-import { Label } from "../label";
-import { Input } from "../input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/store/auth-store";
 import axiosInstance from "@/lib/axios";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Loader } from "lucide-react";
+import { CardContent, CardHeader, CardTitle } from "../card";
 
-const fundWalletSchema = z.object({
-  amount: z.number().min(100),
+const formSchema = z.object({
+  amount: z.coerce
+    .number()
+    .gte(100, { message: "Amount must not be less than N100" }),
 });
 
-export const FundWallet = () => {
-  const queryClient = useQueryClient();
+type FormDataType = z.infer<typeof formSchema>;
 
-  const {
-    data: paystackData,
-    mutate,
-    error,
-    isError,
-    isSuccess,
-  } = useMutation({
+export const FundWallet = () => {
+  const form = useForm<FormDataType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      amount: 100,
+    },
+  });
+
+  const { mutate, isPending } = useMutation({
     mutationFn: async (userData: { amount: number; email: string }) => {
       const res = await axiosInstance.post("/paystack/initialize", userData);
       return res.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+    onSuccess: (data) => {
+      window.location.href = data.data.authorization_url;
     },
-  });
-
-  const credentials = useAuth();
-
-  useEffect(() => {
-    if (isSuccess) {
-      const {
-        data: { authorization_url },
-      } = paystackData;
-      window.location.href = authorization_url;
-    }
-
-    if (isError) {
+    onError: (error) => {
       if (error instanceof AxiosError) {
         const erroMessage: string =
           error.response?.data.message || error.message;
         toast.error(erroMessage);
       }
-    }
-  }, [isError, isSuccess, error]);
+    },
+  });
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const credentials = useAuth()!;
 
-    const formData = new FormData(e.currentTarget);
-    const formValue = Object.fromEntries(formData);
-    try {
-      const validatedData = fundWalletSchema.safeParse({
-        amount: +formValue.amount,
-      });
-      if (!validatedData.success) {
-        const error = fromError(validatedData.error);
-        throw error;
-      }
-
-      const { data } = validatedData;
-      mutate({ amount: data.amount, email: credentials?.email! });
-    } catch (err) {
-      if (err instanceof ValidationError) {
-        toast.error(err.message, { duration: 4000, position: "top-right" });
-      }
-    }
+  const onSubmit = (values: FormDataType) => {
+    mutate({ ...values, email: credentials?.email });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="amount" className="text-right">
-            Amount
-          </Label>
-          <Input
-            type="number"
-            name="amount"
-            id="amount"
-            placeholder="minimum of N100"
-            className="outline-none border-none col-span-3"
-          />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <div className="col-span-4 flex justify-center">
-            <Button variant={"outline"}>Fund Wallet</Button>
-          </div>
-        </div>
-      </div>
-    </form>
+    <>
+      <CardHeader>
+        <CardTitle className="text-center">Fund Wallet</CardTitle>
+      </CardHeader>
+      <CardContent className="flex justify-center">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-3 md:w-3/4 sm:w-ful"
+          >
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Minimum amount is N100" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="font-bold text-lg self-center md:w-2/3 sm:w-full"
+            >
+              {isPending ? (
+                <Loader className="animate-spin inline-block" />
+              ) : (
+                "Fund Wallet"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </>
   );
 };
