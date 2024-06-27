@@ -51,7 +51,7 @@ export const Wallet = () => {
           </div>
         </CardContent>
       </Card>
-      <Card className="rounded-md bg-stone-50 mb-4 md:w-3/4 ">
+      <Card className="rounded-md p-4 bg-stone-50 mb-4 md:w-3/4 ">
         <Outlet />
       </Card>
     </>

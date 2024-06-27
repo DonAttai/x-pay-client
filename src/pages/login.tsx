@@ -78,7 +78,7 @@ export const Login = () => {
     <section className="flex flex-col h-screen items-center justify-center bg-stone-50">
       <Card>
         <CardHeader>
-          <CardTitle className="text-blue-300 text-center">X-Pay</CardTitle>
+          <CardTitle className="text-blue-300 text-center">Login</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
