@@ -131,14 +131,19 @@ export const Login = () => {
             </form>
           </Form>
         </CardContent>
-        <CardFooter>
-          Don't have an account?
-          <Link
-            to="/register"
-            className="underline ml-2  text-blue-400 hover:text-blue-600 duration-500"
-          >
-            create account!
+        <CardFooter className="flex flex-col gap-1">
+          <Link to="/forgot-password" className=" text-blue-400  underline">
+            Forgot password
           </Link>
+          <div>
+            Don't have an account?
+            <Link
+              to="/register"
+              className="underline ml-2  text-blue-400 hover:text-blue-600 duration-500"
+            >
+              create account!
+            </Link>
+          </div>
         </CardFooter>
       </Card>
     </section>

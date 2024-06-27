@@ -70,9 +70,7 @@ export const Register = () => {
     <section className="flex flex-col h-screen items-center justify-center bg-stone-50">
       <Card>
         <CardHeader>
-          <CardTitle className="text-blue-300 text-center">
-            Create Account
-          </CardTitle>
+          <CardTitle className="text-blue-300 text-center">Sign Up</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
