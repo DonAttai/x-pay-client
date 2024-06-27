@@ -70,7 +70,9 @@ export const Register = () => {
     <section className="flex flex-col h-screen items-center justify-center bg-stone-50">
       <Card>
         <CardHeader>
-          <CardTitle className="text-blue-300 text-center">X-Pay</CardTitle>
+          <CardTitle className="text-blue-300 text-center">
+            Create Account
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -138,7 +140,7 @@ export const Register = () => {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="font-bold text-lg self-center md:w-2/3 sm:w-full"
+                className="font-semibold text-lg self-center bg-blue-400 w-full hover:bg-blue-500"
               >
                 {isPending ? (
                   <Loader className="animate-spin inline-block" />

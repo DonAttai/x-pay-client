@@ -120,7 +120,7 @@ export const Login = () => {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="font-bold text-lg self-center md:w-2/3 sm:w-full"
+                className="font-semibold text-lg self-center w-full bg-blue-400 hover:bg-blue-500"
               >
                 {isPending ? (
                   <Loader className="animate-spin inline-block" />
