@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Loader, MoveUpRight } from "lucide-react";
+import { Loader, MoveDown, MoveUpRight } from "lucide-react";
 import { formatted } from "@/lib/utils";
 import { useWallet } from "@/hooks/useWallet";
 import { useAuth } from "@/store/auth-store";
@@ -34,6 +34,7 @@ export const Wallet = () => {
           <div className="flex flex-wrap justify-center gap-4 w-full max-w-screen-lg mx-auto">
             <Button variant={"outline"} onClick={() => navigate("fund-wallet")}>
               Fund Wallet
+              <MoveDown size={16} className="ml-2" />
             </Button>
             <Button
               variant={"outline"}
