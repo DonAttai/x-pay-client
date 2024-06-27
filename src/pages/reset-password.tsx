@@ -19,13 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader } from "lucide-react";
 
 const formSchema = z.object({
@@ -92,7 +86,6 @@ export const ResetPassword = () => {
           <CardTitle className="text-3xl text-center text-blue-400 animate-bounce">
             X-PAY
           </CardTitle>
-          <CardDescription>Enter new password</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
