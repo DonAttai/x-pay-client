@@ -19,9 +19,9 @@ export const DashboardHome = () => {
 
   return (
     <div>
-      <div className="bg-stone-50 rounded-md">
+      <div className={`bg-stone-50 rounded-md ${wallet ? "" : "p-4"}`}>
         {wallet ? (
-          <div className="flex justify-between mb-4 p-8">
+          <div className="flex justify-between mb-4 p-8 space-x-4">
             <p>Wallet ID: {isWallet && wallet.id}</p>
             <p>Balance: {isWallet && formatted(+wallet.balance)}</p>
           </div>
@@ -29,6 +29,11 @@ export const DashboardHome = () => {
           <div>Create and Fund your wallet to start making transactions!</div>
         )}
       </div>
+      {wallet && wallet.balance === "0.00" && (
+        <p className="text-center">
+          Fund your wallet to start making transactions
+        </p>
+      )}
       {isTransaction && transactions?.length ? (
         <div className="bg-stone-50 rounded-md p-10">
           <span className="flex justify-between mb-4">

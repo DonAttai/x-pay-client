@@ -95,7 +95,7 @@ export const TransferMoney = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-3 md:w-3/4 sm:w-ful"
+            className="flex flex-col gap-3 p-2 w-full"
           >
             <FormField
               control={form.control}

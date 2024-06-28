@@ -63,11 +63,11 @@ export const FundWallet = () => {
       <CardHeader>
         <CardTitle className="text-center">Fund Wallet</CardTitle>
       </CardHeader>
-      <CardContent className="flex justify-center">
+      <CardContent className="flex justify-center w-full">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-3 md:w-3/4 sm:w-ful"
+            className="flex flex-col p-2 gap-3 w-full"
           >
             <FormField
               control={form.control}

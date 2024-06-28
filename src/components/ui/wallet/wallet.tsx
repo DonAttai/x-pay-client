@@ -22,11 +22,11 @@ export const Wallet = () => {
 
   return (
     <>
-      <Card className="flex flex-col items-center mb-2 bg-stone-50 md:w-3/4">
+      <Card className="flex flex-col items-center mb-2 bg-stone-50 md:w-1/2">
         <CardHeader>
           <CardTitle>WALLET</CardTitle>
         </CardHeader>
-        <CardContent className="rounded-md">
+        <CardContent className="rounded-md w-full">
           <div className="flex flex-wrap gap-2 justify-between mb-8">
             <p>Wallet ID: {isSuccess && wallet.id}</p>
             <p>Balance: {isSuccess && formatted(+wallet.balance)}</p>
@@ -52,7 +52,7 @@ export const Wallet = () => {
           </div>
         </CardContent>
       </Card>
-      <Card className="rounded-md p-4 bg-stone-50 mb-4 md:w-3/4 ">
+      <Card className="rounded-md bg-stone-50 mb-4 md:w-1/2 ">
         <Outlet />
       </Card>
     </>
