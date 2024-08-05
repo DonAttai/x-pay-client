@@ -84,7 +84,7 @@ export function CreateUserDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <p>Create User</p>
+        <Button className="font-semibold text-lg">Create User</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -1,5 +1,4 @@
 import { NavLink } from "react-router-dom";
-import { CreateUserDialog } from "./create-user-dialog";
 import {
   UserCredentialsType,
   useAuth,
@@ -48,10 +47,6 @@ function SideBar() {
         >
           Manage Users
         </NavLink>
-
-        <div className="py-2 px-4 hover:bg-gray-700 cursor-pointer">
-          <CreateUserDialog />
-        </div>
       </nav>
     </aside>
   );

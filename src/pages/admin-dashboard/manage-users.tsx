@@ -2,6 +2,7 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Loader } from "lucide-react";
 import { useUsers } from "@/hooks/useUsers";
+import { CreateUserDialog } from "@/components/ui/create-user-dialog";
 
 export const ManageUsers = () => {
   const { data: users, isPending, isSuccess } = useUsers();
@@ -18,7 +19,10 @@ export const ManageUsers = () => {
     <>
       {isSuccess && users.length ? (
         <div className="rounded-md p-10">
-          <h3 className="mb-4 mt-8 text-center text-xl font-bold">
+          <div className="text-right">
+            <CreateUserDialog />
+          </div>
+          <h3 className="mb-4 mt-4 text-center text-xl font-bold">
             Account Management
           </h3>
           <DataTable columns={columns} data={users} />

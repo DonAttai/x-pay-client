@@ -25,7 +25,7 @@ import { Dashboard } from "@/pages/dashboard.tsx";
 import { Transactions } from "@/components/ui/transactions/";
 import { DashboardHome } from "@/components/ui/dashboard.tsx";
 import { AdminDashboard, ManageUsers } from "@/pages/admin-dashboard/index.ts";
-import { Register } from "@/pages/resgister.tsx";
+import { Register } from "@/pages/register.tsx";
 import { FundWallet, TransferMoney, Wallet } from "@/components/ui/wallet";
 import { NotFound } from "@/pages/not-found.tsx";
 import { Settings } from "./pages/settings.tsx";
@@ -37,6 +37,7 @@ import { ResetPassword } from "./pages/reset-password.tsx";
 import { Admin } from "./pages/admin.tsx";
 import { AdminLogin } from "./pages/admin-login.tsx";
 import { AllTransactions } from "./components/ui/all-transactions/all-transactions.tsx";
+import { SessionExpiredModal } from "./components/session-expired-modal.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -84,6 +85,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <SessionExpiredModal />
       <Toaster />
       <ReactQueryDevtools />
     </QueryClientProvider>
