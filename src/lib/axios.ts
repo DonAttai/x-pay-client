@@ -1,7 +1,13 @@
-import { toastErrorMessage } from "@/lib/utils";
 import { UserCredentialsType } from "@/store/auth-store";
 import { useSessionStore } from "@/store/session-store";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+
+interface FailedRequests {
+  resolve: (value: AxiosResponse) => void;
+  reject: (value: AxiosError) => void;
+  config: AxiosRequestConfig;
+  error: AxiosError;
+}
 
 const API_URL =
   import.meta.env.VITE_NODE_ENV === "development"
@@ -16,68 +22,85 @@ const axiosInstance = axios.create({
   },
 });
 
+// request interceptor
 axiosInstance.interceptors.request.use(
-  (config) => {
+  (request) => {
     const credentials = JSON.parse(
       localStorage.getItem("credentials") as string
     );
-    if (credentials && credentials.accessToken) {
-      config.headers.Authorization = `Bearer ${credentials.accessToken}`;
+    if (credentials?.accessToken) {
+      request.headers.Authorization = `Bearer ${credentials.accessToken}`;
     }
-    return config;
+    return request;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
 
-axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+// response interceptor
+let failedRequests: FailedRequests[] = [];
+let isTokenRefreshing = false;
 
-  async (error) => {
-    const originalRequest = error.config;
+axiosInstance.interceptors.response.use(
+  (response) => response,
+
+  async (error: AxiosError) => {
+    const status = error.response?.status;
+    const originalRequest = error.config!;
     const credentials: UserCredentialsType = JSON.parse(
       localStorage.getItem("credentials") as string
     );
-    if (error.response.status === 401) {
-      const errorMessage =
-        error.response.data.message || error.response.data.error;
 
-      if (errorMessage === "expired_token" && !originalRequest._retry) {
-        originalRequest._retry = true;
-        try {
-          const res = await axiosInstance.post("/auth/refresh");
-          const { accessToken: newAccessToken } = res.data;
-          credentials.accessToken = newAccessToken;
-
-          localStorage.setItem("credentials", JSON.stringify(credentials));
-
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
-          return axiosInstance(originalRequest);
-        } catch (error) {
-          if (error instanceof AxiosError) {
-            const errorMesage = error.response?.data.message;
-            if (
-              error.response?.status === 403 &&
-              errorMesage === "expired_refresh_token"
-            ) {
-              localStorage.removeItem("credentials");
-              await axiosInstance.post("/auth/logout");
-              // session modal
-              useSessionStore.getState().actions.setSessionExpired(true);
-            }
-          } else {
-            toastErrorMessage("something went wrong!");
-          }
-          return Promise.reject(error);
-        }
-      }
+    if (status !== 401) {
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    if (isTokenRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedRequests.push({
+          resolve,
+          reject,
+          config: originalRequest,
+          error: error,
+        });
+      });
+    }
+
+    isTokenRefreshing = true;
+
+    try {
+      const res = await axiosInstance.post("/auth/refresh");
+      const { accessToken = null } = res.data;
+
+      if (!accessToken) {
+        throw new Error(
+          "Something went wrong while refreshing your access token"
+        );
+      }
+
+      credentials.accessToken = accessToken;
+
+      localStorage.setItem("credentials", JSON.stringify(credentials));
+
+      failedRequests.forEach(({ resolve, reject, config }) => {
+        axiosInstance(config)
+          .then((response) => resolve(response))
+          .catch((error) => reject(error));
+      });
+    } catch (_error: unknown) {
+      failedRequests.forEach(({ reject, error }) => reject(error));
+      localStorage.removeItem("credentials");
+      await axiosInstance.post("/auth/logout");
+      // session modal
+      useSessionStore.getState().actions.setSessionExpired(true);
+      return Promise.reject(error);
+    } finally {
+      failedRequests = [];
+      isTokenRefreshing = false;
+    }
+
+    return axiosInstance(originalRequest);
   }
 );
 
