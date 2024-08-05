@@ -1,12 +1,7 @@
 import { toastErrorMessage } from "@/lib/utils";
 import { UserCredentialsType } from "@/store/auth-store";
-import {
-  useSession,
-  useSessionActions,
-  useSessionStore,
-} from "@/store/session-store";
+import { useSessionStore } from "@/store/session-store";
 import axios, { AxiosError } from "axios";
-import toast from "react-hot-toast";
 
 const API_URL =
   import.meta.env.VITE_NODE_ENV === "development"
@@ -71,6 +66,7 @@ axiosInstance.interceptors.response.use(
             ) {
               localStorage.removeItem("credentials");
               await axiosInstance.post("/auth/logout");
+              // session modal
               useSessionStore.getState().actions.setSessionExpired(true);
             }
           } else {
