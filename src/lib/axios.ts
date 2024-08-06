@@ -1,26 +1,22 @@
 import { UserCredentialsType } from "@/store/auth-store";
 import { useSessionStore } from "@/store/session-store";
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-
-interface FailedRequests {
-  resolve: (value: AxiosResponse) => void;
-  reject: (value: AxiosError) => void;
-  config: AxiosRequestConfig;
-  error: AxiosError;
-}
+import axios, { AxiosError } from "axios";
 
 const API_URL =
   import.meta.env.VITE_NODE_ENV === "development"
     ? import.meta.env.VITE_API_URL_LOCAL
     : import.meta.env.VITE_API_URL;
 
-const axiosInstance = axios.create({
+const baseConfig = {
   baseURL: API_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
+};
+
+const axiosInstance = axios.create(baseConfig);
+const axiosClient = axios.create(baseConfig);
 
 // request interceptor
 axiosInstance.interceptors.request.use(
@@ -39,68 +35,51 @@ axiosInstance.interceptors.request.use(
 );
 
 // response interceptor
-let failedRequests: FailedRequests[] = [];
-let isTokenRefreshing = false;
 
 axiosInstance.interceptors.response.use(
   (response) => response,
 
-  async (error: AxiosError) => {
-    const status = error.response?.status;
-    const originalRequest = error.config!;
-    const credentials: UserCredentialsType = JSON.parse(
-      localStorage.getItem("credentials") as string
-    );
+  async (error) => {
+    const originalRequest = error.config;
 
-    if (status !== 401) {
-      return Promise.reject(error);
-    }
+    if (
+      error.response?.status === 401 &&
+      error.response.data?.message === "expired_token" &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      const credentials: UserCredentialsType = JSON.parse(
+        localStorage.getItem("credentials") as string
+      );
 
-    if (isTokenRefreshing) {
-      return new Promise((resolve, reject) => {
-        failedRequests.push({
-          resolve,
-          reject,
-          config: originalRequest,
-          error: error,
-        });
-      });
-    }
+      if (credentials.accessToken) {
+        try {
+          const res = await axiosClient.post("/auth/refresh");
+          const { accessToken } = res.data;
 
-    isTokenRefreshing = true;
-
-    try {
-      const res = await axiosInstance.post("/auth/refresh");
-      const { accessToken = null } = res.data;
-
-      if (!accessToken) {
-        throw new Error(
-          "Something went wrong while refreshing your access token"
-        );
+          credentials.accessToken = accessToken;
+          localStorage.setItem("credentials", JSON.stringify(credentials));
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return axiosInstance(originalRequest);
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            if (
+              error.response?.status === 403 &&
+              error.response.data.message === "expired_refresh_token"
+            ) {
+              await axiosInstance.post("/auth/logout");
+              localStorage.removeItem("credentials");
+              //    session modal
+              useSessionStore.getState().actions.setSessionExpired(true);
+              // return;
+            }
+          }
+          return Promise.reject(error);
+        }
       }
-
-      credentials.accessToken = accessToken;
-
-      localStorage.setItem("credentials", JSON.stringify(credentials));
-
-      failedRequests.forEach(({ resolve, reject, config }) => {
-        axiosInstance(config)
-          .then((response) => resolve(response))
-          .catch((error) => reject(error));
-      });
-    } catch (_error: unknown) {
-      failedRequests.forEach(({ reject, error }) => reject(error));
-      localStorage.removeItem("credentials");
-      await axiosInstance.post("/auth/logout");
-      // session modal
-      useSessionStore.getState().actions.setSessionExpired(true);
-      return Promise.reject(error);
-    } finally {
-      failedRequests = [];
-      isTokenRefreshing = false;
     }
 
-    return axiosInstance(originalRequest);
+    return Promise.reject(error);
   }
 );
 
