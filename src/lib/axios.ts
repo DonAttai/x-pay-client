@@ -10,9 +10,9 @@ const API_URL =
 const baseConfig = {
   baseURL: API_URL,
   withCredentials: true,
-  // headers: {
-  //   "Content-Type": "application/json",
-  // },
+  headers: {
+    "Content-Type": "application/json",
+  },
 };
 
 const axiosInstance = axios.create(baseConfig);
