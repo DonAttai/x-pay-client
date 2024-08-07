@@ -27,7 +27,7 @@ const credentials = storedCredentials
   ? (JSON.parse(storedCredentials) as UserCredentialsType)
   : null;
 
-const useAuthStore = create<AuthStore>()((set) => ({
+export const useAuthStore = create<AuthStore>()((set) => ({
   credentials: credentials || null,
 
   actions: {

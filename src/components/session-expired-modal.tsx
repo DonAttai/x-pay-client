@@ -14,7 +14,7 @@ export function SessionExpiredModal() {
   const { setSessionExpired } = useSessionActions();
 
   const handleSessionExpired = async () => {
-    window.location.replace("/login");
+    window.location.reload();
     setSessionExpired(false);
   };
   return (
@@ -30,7 +30,7 @@ export function SessionExpiredModal() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button onClick={handleSessionExpired}>Login</Button>
+          <Button onClick={handleSessionExpired}>Close</Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

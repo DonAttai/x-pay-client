@@ -1,4 +1,4 @@
-import { UserCredentialsType } from "@/store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 import { useSessionStore } from "@/store/session-store";
 import axios, { AxiosError } from "axios";
 
@@ -17,13 +17,12 @@ const baseConfig = {
 
 const axiosInstance = axios.create(baseConfig);
 const axiosClient = axios.create(baseConfig);
+// const setCredentials = useAuthStore.getState().actions.setCredentials;
 
 // request interceptor
 axiosInstance.interceptors.request.use(
   (request) => {
-    const credentials = JSON.parse(
-      localStorage.getItem("credentials") as string
-    );
+    const credentials = useAuthStore.getState().credentials;
     if (credentials?.accessToken) {
       request.headers.Authorization = `Bearer ${credentials.accessToken}`;
     }
@@ -41,41 +40,36 @@ axiosInstance.interceptors.response.use(
 
   async (error) => {
     const originalRequest = error.config;
+    const credentials = useAuthStore.getState().credentials!;
+    const setCredentials = useAuthStore.getState().actions.setCredentials;
 
     if (
       error.response?.status === 401 &&
-      error.response.data?.message === "expired_token" &&
-      !originalRequest._retry
+      error.response.data?.message === "expired_token"
     ) {
-      originalRequest._retry = true;
-      const credentials: UserCredentialsType = JSON.parse(
-        localStorage.getItem("credentials") as string
-      );
+      try {
+        const res = await axiosClient.post("/auth/refresh");
+        const { accessToken } = res.data;
 
-      if (credentials.accessToken) {
-        try {
-          const res = await axiosClient.post("/auth/refresh");
-          const { accessToken } = res.data;
+        credentials.accessToken = accessToken;
+        setCredentials(credentials);
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        originalRequest._retry = true;
 
-          credentials.accessToken = accessToken;
-          localStorage.setItem("credentials", JSON.stringify(credentials));
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          return axiosInstance(originalRequest);
-        } catch (error) {
-          if (error instanceof AxiosError) {
-            if (
-              error.response?.status === 403 &&
-              error.response.data.message === "expired_refresh_token"
-            ) {
-              await axiosInstance.post("/auth/logout");
-              localStorage.removeItem("credentials");
-              //    session modal
-              useSessionStore.getState().actions.setSessionExpired(true);
-              // return;
-            }
+        return axiosInstance(originalRequest);
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          if (
+            error.response?.status === 403 &&
+            error.response.data.message === "expired_refresh_token"
+          ) {
+            setCredentials(null);
+            await axiosInstance.post("/auth/logout");
+            //    session modal
+            useSessionStore.getState().actions.setSessionExpired(true);
           }
-          return Promise.reject(error);
         }
+        return Promise.reject(error);
       }
     }
 
