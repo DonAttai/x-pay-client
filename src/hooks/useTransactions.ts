@@ -18,12 +18,15 @@ export const useTransactions = () => {
       const res = await axiosInstance.get(
         `users/${credentials.id}/transactions`
       );
-      const data: TransactionType[] = res.data;
-      return data.toSorted(
-        (a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt))
-      );
+      return sortedTransactions(res.data);
     },
 
     enabled: !!credentials?.id,
   });
 };
+
+function sortedTransactions(transactions: TransactionType[]) {
+  return transactions.sort(
+    (a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt))
+  );
+}
