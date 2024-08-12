@@ -91,7 +91,7 @@ export const TransferMoney = () => {
       <CardHeader>
         <CardTitle className="text-center">Transfer Money</CardTitle>
       </CardHeader>
-      <CardContent className="flex justify-center w-full fit-content">
+      <CardContent className="flex justify-center w-full">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}

@@ -16,7 +16,7 @@ export const Transactions = () => {
   return (
     <>
       {isSuccess && transactions?.length ? (
-        <div className="bg-stone-50 rounded-md p-10 sm:w-1/2 md:w-full lg:w-3/4">
+        <div className="bg-stone-50 rounded-md p-5 w-full">
           <h3 className="text-2xl mb-2">Transactions</h3>
           <DataTable columns={columns} data={transactions} />
         </div>

@@ -36,7 +36,7 @@ import { ForgotPassword } from "./pages/forgot-password.tsx";
 import { ResetPassword } from "./pages/reset-password.tsx";
 import { Admin } from "./pages/admin.tsx";
 import { AdminLogin } from "./pages/admin-login.tsx";
-import { AllTransactions } from "./components/ui/all-transactions/all-transactions.tsx";
+// import { AllTransactions } from "./components/ui/all-transactions/all-transactions.tsx";
 import { SessionExpiredModal } from "./components/session-expired-modal.tsx";
 
 const router = createBrowserRouter(
@@ -53,7 +53,7 @@ const router = createBrowserRouter(
       <Route path="admin/dashboard" element={<Admin />}>
         <Route index element={<AdminDashboard />} />
         <Route path="manage-users" element={<ManageUsers />} />
-        <Route path="transactions" element={<AllTransactions />} />
+        {/* <Route path="transactions" element={<AllTransactions />} /> */}
       </Route>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />

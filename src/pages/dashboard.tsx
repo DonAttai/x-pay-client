@@ -17,8 +17,8 @@ export const Dashboard = () => {
   }, [credentials?.accessToken, navigate]);
 
   return (
-    <section className="min-h-screen flex bg-gray-200 ">
-      <aside className="bg-stone-50 fixed h-screen w-52 ">
+    <section className="min-h-screen flex bg-grey-200 ">
+      <aside className="bg-stone-50 fixed h-full w-52 ">
         <div className="h-20 flex justify-center items-center">
           <p className="text-blue-400 text-2xl">X-PAY</p>
         </div>
@@ -33,7 +33,7 @@ export const Dashboard = () => {
         <Header>
           <Navbar />
         </Header>
-        <main className="flex flex-col items-center mt-8 mr-32 ml-56">
+        <main className="flex flex-col items-center mb-10 mt-8 mr-32 ml-56">
           <Outlet />
         </main>
       </div>

@@ -1,3 +1,9 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from "@/components/ui/card";
 import { useAllTransactions } from "@/hooks/useAllTransaction";
 import { useUsers } from "@/hooks/useUsers";
 import { formatted, toastErrorMessage } from "@/lib/utils";
@@ -47,29 +53,39 @@ export const AdminDashboard = () => {
     <div className="p-4 mt-8">
       <h1 className="text-2xl font-bold mb-4">Dashboard Overview</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-bold">Total Users</h2>
-          <p className="text-3xl">{users && users.length}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-bold">Active Users</h2>
-          <p className="text-3xl">{activeUsers && activeUsers.length}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-bold">Verified Users</h2>
-          <p className="text-3xl">{verifiedUsers && verifiedUsers.length}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-bold">Total Transactions</h2>
-          <p className="text-3xl">{transactions && transactions.length}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow w-full">
-          <h2 className="text-xl font-bold">Total Amount Transacted</h2>
-          <p className="text-3xl truncate">
-            {totalAmount && formatted(totalAmount)}
-          </p>
-        </div>
+        <DashboardCard title="Total Users" content={users?.length!} />
+        <DashboardCard title="Active Users" content={activeUsers?.length!} />
+        <DashboardCard
+          title="Verified Users"
+          content={verifiedUsers?.length!}
+        />
+        <DashboardCard
+          title="Total Transactions"
+          content={transactions?.length!}
+        />
+        <DashboardCard
+          title="Total Amount Transacted"
+          content={formatted(totalAmount ?? 0)}
+        />
       </div>
     </div>
   );
 };
+
+function DashboardCard({ title, content }: DashboardCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardDescription>{title}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-lg font-bold truncate">{content ?? 0}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface DashboardCardProps {
+  title: string;
+  content: string | number;
+}

@@ -22,7 +22,7 @@ export const Wallet = () => {
 
   return (
     <>
-      <Card className="flex flex-col items-center mb-2 bg-stone-50 md:w-1/2">
+      <Card className="flex flex-col items-center mb-2 bg-stone-50 sm:w-2/3">
         <CardHeader>
           <CardTitle>WALLET</CardTitle>
         </CardHeader>
@@ -52,7 +52,7 @@ export const Wallet = () => {
           </div>
         </CardContent>
       </Card>
-      <Card className="rounded-md bg-stone-50 mb-4 md:w-1/2 ">
+      <Card className="rounded-md bg-stone-50 mb-4 sm:w-2/3 ">
         <Outlet />
       </Card>
     </>

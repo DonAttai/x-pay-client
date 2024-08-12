@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 export const Header = (props: { children: React.ReactNode }) => {
   const [greeting, setGreeting] = useState("");
-  // const { data: user } = useUser();
 
   const credentials = useAuth();
 
@@ -34,16 +33,19 @@ export const Header = (props: { children: React.ReactNode }) => {
   return (
     <header className="h-20 sticky top-0 right-0 ml-52 border-l bg-stone-50 z-10 ">
       <nav className="w-full h-full ">
-        <div className="w-full h-full flex gap-2 justify-between pl-6 pr-32 items-center relative">
+        <div className="w-full h-full flex gap-2 justify-end pl-6 pr-12 items-center relative sm:justify-between">
           {location.pathname === "/dashboard" ? (
-            <p className="text-lg font-semibold">
+            <p className="text-lg font-semibold hidden sm:block">
               {credentials &&
                 `${greeting}, ${credentials?.firstName?.toUpperCase()}`}
             </p>
           ) : (
             navSection.map((section) => {
               return location.pathname === section.path ? (
-                <p key={section.title} className="text-lg font-semibold">
+                <p
+                  key={section.title}
+                  className="text-lg font-semibold hidden sm:block"
+                >
                   {section.title}
                 </p>
               ) : null;

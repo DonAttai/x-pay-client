@@ -20,12 +20,15 @@ const isActiveStyles = {
   borderRadius: "8px",
 };
 
-type PropType = {
+type SidebarPropType = {
   isDropDownOpen: boolean;
   toggleDropDown: () => void;
 };
 
-export const Sidebar = ({ isDropDownOpen, toggleDropDown }: PropType) => {
+export const Sidebar = ({
+  isDropDownOpen,
+  toggleDropDown,
+}: SidebarPropType) => {
   const { data: wallet, isPending } = useWallet();
 
   if (isPending) {

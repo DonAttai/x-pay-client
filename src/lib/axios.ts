@@ -17,7 +17,6 @@ const baseConfig = {
 
 const axiosInstance = axios.create(baseConfig);
 const axiosClient = axios.create(baseConfig);
-// const setCredentials = useAuthStore.getState().actions.setCredentials;
 
 // request interceptor
 axiosInstance.interceptors.request.use(
@@ -47,15 +46,13 @@ axiosInstance.interceptors.response.use(
       error.response?.status === 401 &&
       error.response.data?.message === "expired_token"
     ) {
+      originalRequest._retry = true;
       try {
         const res = await axiosClient.post("/auth/refresh");
         const { accessToken } = res.data;
 
-        credentials.accessToken = accessToken;
-        setCredentials(credentials);
+        setCredentials({ ...credentials, accessToken });
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        originalRequest._retry = true;
-
         return axiosInstance(originalRequest);
       } catch (error) {
         if (error instanceof AxiosError) {
@@ -64,7 +61,7 @@ axiosInstance.interceptors.response.use(
             error.response.data.message === "expired_refresh_token"
           ) {
             setCredentials(null);
-            await axiosInstance.post("/auth/logout");
+            await axiosClient.post("/auth/logout");
             //    session modal
             useSessionStore.getState().actions.setSessionExpired(true);
           }
