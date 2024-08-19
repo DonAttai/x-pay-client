@@ -16,7 +16,6 @@ const baseConfig = {
 };
 
 const axiosInstance: AxiosInstance = axios.create(baseConfig); // axios instance with interceptors
-const Axios: AxiosInstance = axios.create(baseConfig); //axios instance without interceptors
 
 // Request Interceptor
 axiosInstance.interceptors.request.use(
@@ -46,7 +45,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         // Attempt to refresh the token
-        const res = await Axios.post("/auth/refresh", {});
+        const res = await axiosInstance.post("/auth/refresh", {});
 
         // Update credentials with the new access token
         const credentials = useAuthStore.getState().credentials!; //get credentials from auth store
@@ -61,7 +60,7 @@ axiosInstance.interceptors.response.use(
           if (err.response?.status === 401) {
             // Clear credentials and log the user out
             setCredentials(null);
-            await Axios.post("/auth/logout");
+            await axiosInstance.post("/auth/logout");
 
             // Show session expired modal
             useSessionStore.getState().actions.setSessionExpired(true);
