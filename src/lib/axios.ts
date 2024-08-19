@@ -40,11 +40,12 @@ axiosInstance.interceptors.response.use(
     // Check if the error is a 401 Unauthorized and the request has not been retried yet
     if (
       error.response?.status === 401 &&
-      error.response.data.message === "Unauthorized"
+      error.response.data.message === "Unauthorized" &&
+      !originalRequest._retry
     ) {
+      originalRequest._retry = true;
       try {
         // Attempt to refresh the token
-        originalRequest._retry = true;
         const res = await Axios.post("/auth/refresh", {});
 
         // Update credentials with the new access token
