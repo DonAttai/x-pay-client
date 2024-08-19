@@ -10,6 +10,12 @@ export type TransactionType = {
   description: string;
 };
 
+function sortedTransactions(transactions: TransactionType[]) {
+  return transactions.sort(
+    (a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt))
+  );
+}
+
 export const useTransactions = () => {
   const credentials = useAuth()!;
   return useQuery({
@@ -24,9 +30,3 @@ export const useTransactions = () => {
     enabled: !!credentials?.id,
   });
 };
-
-function sortedTransactions(transactions: TransactionType[]) {
-  return transactions.sort(
-    (a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt))
-  );
-}

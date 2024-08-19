@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/store/auth-store";
 import { useSessionStore } from "@/store/session-store";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
 
 const API_URL =
   import.meta.env.VITE_NODE_ENV === "development"
@@ -15,10 +15,10 @@ const baseConfig = {
   },
 };
 
-const axiosInstance = axios.create(baseConfig);
-const axiosClient = axios.create(baseConfig);
+const axiosInstance: AxiosInstance = axios.create(baseConfig); // axios instance with interceptors
+const Axios: AxiosInstance = axios.create(baseConfig); //axios instance without interceptors
 
-// request interceptor
+// Request Interceptor
 axiosInstance.interceptors.request.use(
   (request) => {
     const credentials = useAuthStore.getState().credentials;
@@ -27,46 +27,45 @@ axiosInstance.interceptors.request.use(
     }
     return request;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
 
-// response interceptor
-
+// Response Interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
-
   async (error) => {
     const originalRequest = error.config;
-    const credentials = useAuthStore.getState().credentials!;
     const setCredentials = useAuthStore.getState().actions.setCredentials;
 
-    if (
-      error.response?.status === 401 &&
-      error.response.data?.message === "expired_token"
-    ) {
-      originalRequest._retry = true;
+    // Check if the error is a 401 Unauthorized and the request has not been retried yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
       try {
-        const res = await axiosClient.post("/auth/refresh");
-        const { accessToken } = res.data;
+        // Attempt to refresh the token
+        const res = await Axios.post("/auth/refresh");
 
-        setCredentials({ ...credentials, accessToken });
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        // Update credentials with the new access token
+        const credentials = useAuthStore.getState().credentials!; //get credentials from auth store
+        setCredentials({ ...credentials, accessToken: res.data.accessToken }); //update credentials
+        originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
+        originalRequest._retry = true;
+
+        // Retry the original request with the new token
         return axiosInstance(originalRequest);
-      } catch (error) {
-        if (error instanceof AxiosError) {
-          if (
-            error.response?.status === 403 &&
-            error.response.data.message === "expired_refresh_token"
-          ) {
+      } catch (err) {
+        // Handle cases where the refresh token fails
+        if (err instanceof AxiosError) {
+          if (err.response?.status === 401) {
+            // Clear credentials and log the user out
             setCredentials(null);
-            await axiosClient.post("/auth/logout");
-            //    session modal
+            await Axios.post("/auth/logout");
+
+            // Show session expired modal
             useSessionStore.getState().actions.setSessionExpired(true);
           }
         }
-        return Promise.reject(error);
+        return Promise.reject(err); // Reject the promise with the error
       }
     }
 
