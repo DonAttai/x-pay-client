@@ -27,9 +27,7 @@ axiosInstance.interceptors.request.use(
     }
     return request;
   },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  }
+  (error: AxiosError) => Promise.reject(error)
 );
 
 // Response Interceptor
@@ -42,12 +40,12 @@ axiosInstance.interceptors.response.use(
     // Check if the error is a 401 Unauthorized and the request has not been retried yet
     if (
       error.response?.status === 401 &&
-      error.response.data.message === "Unauthorized" &&
-      !originalRequest._retry
+      error.response.data.message === "Unauthorized"
     ) {
       try {
         // Attempt to refresh the token
-        const res = await Axios.post("/auth/refresh", {});
+        const res = await axiosInstance.post("/auth/refresh", {});
+        console.log("resfresh-token", res.data);
 
         // Update credentials with the new access token
         const credentials = useAuthStore.getState().credentials!; //get credentials from auth store
