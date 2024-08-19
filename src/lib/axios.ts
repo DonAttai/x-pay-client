@@ -1,6 +1,10 @@
 import { useAuthStore } from "@/store/auth-store";
 import { useSessionStore } from "@/store/session-store";
-import axios, { AxiosError, AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
+
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+}
 
 const API_URL =
   import.meta.env.VITE_NODE_ENV === "development"
@@ -33,7 +37,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as CustomAxiosRequestConfig;
     const setCredentials = useAuthStore.getState().actions.setCredentials;
 
     // Check if the error is a 401 Unauthorized and the request has not been retried yet
@@ -48,8 +52,11 @@ axiosInstance.interceptors.response.use(
         const res = await axiosInstance.post("/auth/refresh", {});
 
         // Update credentials with the new access token
-        const credentials = useAuthStore.getState().credentials!; //get credentials from auth store
+        const credentials = useAuthStore?.getState().credentials!; //get credentials from auth store
         setCredentials({ ...credentials, accessToken: res.data.accessToken }); //update credentials
+        if (!originalRequest.headers) {
+          originalRequest.headers = {};
+        }
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
 
         // Retry the original request with the new token
@@ -63,7 +70,7 @@ axiosInstance.interceptors.response.use(
             await axiosInstance.post("/auth/logout");
 
             // Show session expired modal
-            useSessionStore.getState().actions.setSessionExpired(true);
+            useSessionStore?.getState().actions.setSessionExpired(true);
           }
         }
         return Promise.reject(err); // Reject the promise with the error
