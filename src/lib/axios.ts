@@ -47,7 +47,7 @@ axiosInstance.interceptors.response.use(
     ) {
       try {
         // Attempt to refresh the token
-        const res = await Axios.post("/auth/refresh");
+        const res = await Axios.post("/auth/refresh", {});
 
         // Update credentials with the new access token
         const credentials = useAuthStore.getState().credentials!; //get credentials from auth store
