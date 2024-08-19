@@ -49,10 +49,14 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         // Attempt to refresh the token
-        const res = await axiosInstance.post("/auth/refresh", {});
+        const res = await axios.post(
+          "/auth/refresh",
+          {},
+          { withCredentials: true }
+        );
 
         // Update credentials with the new access token
-        const credentials = useAuthStore?.getState().credentials!; //get credentials from auth store
+        const credentials = useAuthStore.getState().credentials!; //get credentials from auth store
         setCredentials({ ...credentials, accessToken: res.data.accessToken }); //update credentials
         if (!originalRequest.headers) {
           originalRequest.headers = {};
@@ -70,7 +74,7 @@ axiosInstance.interceptors.response.use(
             await axiosInstance.post("/auth/logout");
 
             // Show session expired modal
-            useSessionStore?.getState().actions.setSessionExpired(true);
+            useSessionStore.getState().actions.setSessionExpired(true);
           }
         }
         return Promise.reject(err); // Reject the promise with the error
