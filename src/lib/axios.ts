@@ -19,7 +19,7 @@ const baseConfig = {
   },
 };
 
-const axiosInstance: AxiosInstance = axios.create(baseConfig); // axios instance with interceptors
+const axiosInstance: AxiosInstance = axios.create(baseConfig);
 
 // Request Interceptor
 axiosInstance.interceptors.request.use(
@@ -46,34 +46,29 @@ axiosInstance.interceptors.response.use(
       error.response.data.message === "Unauthorized" &&
       !originalRequest._retry
     ) {
+      const credentials = useAuthStore.getState().credentials!;
       originalRequest._retry = true;
-      try {
-        // Attempt to refresh the token
-        const res = await axiosInstance.post("/auth/refresh", {});
 
-        // Update credentials with the new access token
-        const credentials = useAuthStore.getState().credentials!; //get credentials from auth store
-        setCredentials({ ...credentials, accessToken: res.data.accessToken }); //update credentials
+      try {
+        const res = await axiosInstance.post("/auth/refresh", {});
+        setCredentials({ ...credentials, accessToken: res.data.accessToken });
         if (!originalRequest.headers) {
           originalRequest.headers = {};
         }
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
-
-        // Retry the original request with the new token
         return axiosInstance(originalRequest);
       } catch (err) {
-        // Handle cases where the refresh token fails
         if (err instanceof AxiosError) {
-          if (err.response?.status === 401) {
-            // Clear credentials and log the user out
+          if (
+            err.response?.status === 403 &&
+            err.response.data.message === "expired refresh token"
+          ) {
             setCredentials(null);
-            await axiosInstance.post("/auth/logout");
-
-            // Show session expired modal
+            await axiosInstance.post("/auth/logout", {});
             useSessionStore.getState().actions.setSessionExpired(true);
           }
         }
-        return Promise.reject(err); // Reject the promise with the error
+        return Promise.reject(err);
       }
     }
 
