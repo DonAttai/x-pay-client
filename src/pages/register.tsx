@@ -8,6 +8,7 @@ import { useRegister } from "@/hooks/useRegister";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -70,7 +71,10 @@ export const Register = () => {
     <section className="flex flex-col h-screen items-center justify-center bg-stone-50">
       <Card>
         <CardHeader>
-          <CardTitle className="text-blue-300 text-center">Sign Up</CardTitle>
+          <CardTitle>Create your account</CardTitle>
+          <CardDescription>
+            Please fill in the details to get started
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>

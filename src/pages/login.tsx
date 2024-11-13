@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -78,7 +79,12 @@ export const Login = () => {
     <section className="flex flex-col h-screen items-center justify-center bg-stone-50">
       <Card>
         <CardHeader>
-          <CardTitle className="text-blue-300 text-center">Login</CardTitle>
+          <CardTitle className="text-blue-300 text-center">
+            Sign in to X-pay
+            <CardDescription>
+              Welcome back! Please sign in to continue
+            </CardDescription>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>

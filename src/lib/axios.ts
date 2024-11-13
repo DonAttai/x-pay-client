@@ -58,15 +58,10 @@ axiosInstance.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
         return axiosInstance(originalRequest);
       } catch (err) {
-        if (err instanceof AxiosError) {
-          if (
-            err.response?.status === 403 &&
-            err.response.data.message === "expired refresh token"
-          ) {
-            setCredentials(null);
-            await axiosInstance.post("/auth/logout", {});
-            useSessionStore.getState().actions.setSessionExpired(true);
-          }
+        if (err instanceof AxiosError && err.response?.status === 403) {
+          setCredentials(null);
+          await axiosInstance.post("/auth/logout", {});
+          useSessionStore.getState().actions.setSessionExpired(true);
         }
         return Promise.reject(err);
       }
